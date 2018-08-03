@@ -40,9 +40,9 @@ app.get('/ceph_status', function (req, res) {
 app.get('/snmp', function (req, res) {
   
   var session = new snmp.Session({ host: host, community: commuity });
-  var oid = [1,3,6,1,4,1,51052];
+  var oid = [1,3,6,1,4,1,51052,1,1];
 
-  session.getSubtree({ oid: oid}, function(err, varbinds) {
+  session.get({ oid: oid}, function(err, varbinds) {
     if(err) {
       console.log('SNMP error:' + err);
     }
