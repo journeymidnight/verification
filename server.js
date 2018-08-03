@@ -40,21 +40,21 @@ app.get('/ceph_status', function (req, res) {
 app.get('/snmp', function (req, res) {
   
   var session = new snmp.Session({ host: host, community: commuity });
-  var oid = [1,3,6,1,2,1,1,1,0];
+  var oid = [1,3,6,1,4,1,51052];
 
-  session.get({ oid: oid}, function(err, varbinds) {
+  session.getSubtree({ oid: oid}, function(err, varbinds) {
     var vb;
     if(err) {
       console.log('SNMP error:' + err);
     }
     else {
-      vb = varbinds[0];
-      res.send('The system description is "' + vb.value + '"');
+      varbinds.forEach(function(vb) {
+        res.send(vb.oid + ' = ' + vb.value + ' (' + vb.type + ')');
+      });
     }
     session.close();
   });
 });
-
 
 var server = app.listen(30000, function () {
   var host = server.address().address;
