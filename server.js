@@ -40,7 +40,7 @@ app.get('/ceph_status', function (req, res) {
 app.get('/snmp', function (req, res) {
   
   var session = new snmp.Session({ host: host, community: commuity });
-  var oid = [1.3.6.1.2.1.1.1.0];
+  var oid = [1,3,6,1,2,1,1,1,0];
 
   session.get({ oid: oid}, function(err, varbinds) {
     var vb;
