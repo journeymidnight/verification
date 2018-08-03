@@ -26,7 +26,6 @@ mkdir -p %{buildroot}/root/.snmp/mibs
 mkdir -p %{buildroot}/usr/lib/systemd/system
 mkdir -p  %{buildroot}/binaries/verification
 mv package/verification.service %{buildroot}/usr/lib/systemd/system
-mv JMD-STORAGE-MIB.txt %{buildroot}/root/.snmp/mibs
 cp -r *   %{buildroot}/binaries/verification/
 
 #ceph confs ?
@@ -34,6 +33,7 @@ cp -r *   %{buildroot}/binaries/verification/
 %post
 systemctl start verification
 chkconfig verification on
+curl -o /root/.snmp/mibs/JMD-STORAGE-MID.txt http://localhost:8083/JMD-STORAGE-MID.txt
 
 
 %preun
@@ -45,6 +45,5 @@ rm -rf %{buildroot}
 %defattr(-,root,root,-)
 /binaries/verification/*
 /usr/lib/systemd/system/verification.service
-/root/.snmp/mibs/JMD-STORAGE-MIB.txt
 
 %changelog
