@@ -43,7 +43,6 @@ app.get('/snmp', function (req, res) {
   var oid = [1,3,6,1,4,1,51052];
 
   session.getSubtree({ oid: oid}, function(err, varbinds) {
-    var vb;
     if(err) {
       console.log('SNMP error:' + err);
     }
