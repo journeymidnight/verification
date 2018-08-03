@@ -1,0 +1,18 @@
+{
+  "name": "test-node-ceph",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "blessed": "^0.1.81",
+    "blessed-contrib": "^4.8.5",
+    "express": "^4.16.3",
+    "request": "^2.87.0",
+    "snmp-native": "^1.1.2"
+  }
+}

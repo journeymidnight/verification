@@ -1,0 +1,12 @@
+
+ceph osd tree
+ceph osd df tree --format json-pretty
+
+ceph -s 
+ceph status --format json-pretty
+
+
+
+https://github.com/calmh/node-snmp-native
+
+To receive SNMP information
