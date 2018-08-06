@@ -50,6 +50,7 @@ function getHostlist () {
 app.get('/snmp', function (req, res) {
   
   var host = getHostlist();
+  console.log(host);
   var session = new snmp.Session({ host: host[0], community: commuity });
   var oid = [1,3,6,1,4,1,51052,1,1];
 
