@@ -21,6 +21,10 @@ app.get('/ceph_osd_df_tree', function (req, res) {
 });
 
 app.get('/ceph_status', function (req, res) {
+  return getCephinfo(cmdCeph_status,'all');
+  }
+
+/*app.get('/ceph_status', function (req, res) {
 
   exec(cmdCeph_status,function(err,stdout,stderr){
     if(err){
@@ -32,17 +36,30 @@ app.get('/ceph_status', function (req, res) {
     }
   });
 });
+*/
 
 var commuity = 'public';
 
-function getHostlist () {
-  exec(cmdCeph_status,function(err,stdout,stderr){
+/*
+cmdStr:cmdCeph_osd_df_tree,cmdCeph_status
+dataType:all,host,etc
+*/
+
+function getCephinfo (cmdStr,dataType) {
+  exec(cmdStr,function(err,stdout,stderr){
     if(err){
-      console.log('get hostlist from ceph-status error:' + stderr);
+      console.log('Execute ceph cmmand err:' + stderr);
     }
     else{
-      var strCeph_status = JSON.parse(stdout);
-      return strCeph_status['quorum_names'];
+      if(dataType == 'all'){
+        return JSON.parse(stdout);
+      }
+      if(cmdStr.indexOf('ceph status') != -1 && dataType == 'Host'){
+        return strCeph_status['quorum_names'];
+      }
+      else {
+        console.log('Execute ceph command err,' + 'cmdStr :' + cmdStr + ',dataType:' + dataType + '.' );
+      }
     }
   });  
 }
