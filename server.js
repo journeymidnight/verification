@@ -14,14 +14,13 @@ app.get('/ceph_osd_df_tree', function (req, res) {
       console.log('get ceph osd df tree error:' + stderr);
     }
     else{
-      var strCeph_osd_df_tree = JSON.parse(stdout);
-      res.send(strCeph_osd_df_tree);
+      res.send(stdout);
     }
   });
 });
 
 app.get('/ceph_status', function (req, res) {
-  res.send(getCephinfo(cmdCeph_status,'all'));
+  res.send(getCephinfo(cmdCeph_status));
 });
 
 
@@ -53,7 +52,7 @@ function getCephinfo (cmdStr) {
     }
     else{
       console.log('Execute ceph cmd success:' + cmdStr);
-      return JSON.parse(stdout);
+      return stdout;
     }
   });  
 }
