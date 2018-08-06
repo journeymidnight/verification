@@ -52,7 +52,7 @@ function getCephinfo (cmdStr) {
       console.log('Execute ceph cmd err:' + stderr + ', cmd:' + cmdStr);
     }
     else{
-      console.log('Execute ceph cmd success:' + cmdStr)
+      console.log('Execute ceph cmd success:' + cmdStr);
       return JSON.parse(stdout);
     }
   });  
