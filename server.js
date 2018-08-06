@@ -22,7 +22,8 @@ app.get('/ceph_osd_df_tree', function (req, res) {
 
 app.get('/ceph_status', function (req, res) {
   return getCephinfo(cmdCeph_status,'all');
-  }
+});
+
 
 /*app.get('/ceph_status', function (req, res) {
 
