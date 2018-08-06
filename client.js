@@ -3,6 +3,7 @@ const blessed = require('blessed');
 const contrib = require('blessed-contrib');
 
 var screen = blessed.screen();
+
 var grid = new contrib.grid({ rows: 12, cols: 12, screen: screen });
 
 var map = grid.set(0, 0, 4, 4, contrib.map, { label: 'World Map' });
@@ -13,7 +14,7 @@ var log = grid.set(0, 8, 4, 4, contrib.log, { fg: "red", label: 'server log' });
 
 var cephStatus = grid.set(4, 0, 4, 4, contrib.log, { fg: "green", label: 'Ceph Status' });
 
-var cephOsdTree = grid.set(4, 4, 4, 4, contrib.log, { fg: "green", label: 'Ceph OSD Tree' });
+var cephOsdDfTree = grid.set(4, 4, 4, 4, contrib.bar, { label: 'Ceph OSD Df Tree', barWidth: 8, barSpacing: 6, xOffset: 0, maxHeight: 30 });
 
 var snmpInfo = grid.set(4, 8, 4, 4, contrib.log, { fg: "green", label: 'SNMP' });
 
@@ -22,7 +23,6 @@ var demo4 = grid.set(8, 0, 4, 4, contrib.map, { label: 'Demo4' });
 var demo5 = grid.set(8, 4, 4, 4, contrib.map, { label: 'Demo5' });
 
 var demo6 = grid.set(8, 8, 4, 4, contrib.map, { label: 'Demo6' });
-
 
 screen.render();
 
@@ -33,7 +33,7 @@ setTimeout(() => {
 }, 2000);
 
 request({
-	uri: 'http://10.70.161.10:30000/',
+	uri: 'http://10.70.160.138:30000/',
 	method: 'GET',
 }, (err, response, body) => {
 	if (!err && response.statusCode === 200) {
@@ -47,11 +47,21 @@ request({
 
 setInterval(function () {
 	request({
-		uri: 'http://10.70.161.10:30000/ceph_status',
+		uri: 'http://10.70.160.138:30000/ceph_status',
 		method: 'GET',
 	}, (err, response, body) => {
 		if (!err && response.statusCode === 200) {
-			cephStatus.log(body);
+			var json = JSON.parse(body);
+			var list = [];
+			list.push(json.health.status);
+			list.push(json.monmap.fsid);
+			var mapModules = json.mgrmap.modules;
+			for (var i = 0; i < mapModules.length; i++) {
+				list.push(mapModules[i]);
+			}
+			for (var i = 0; i < list.length; i++) {
+				cephStatus.log(list[i]);
+			}
 			screen.render();
 		} else {
 			cephStatus.log(`request failed: ${response}`);
@@ -61,21 +71,35 @@ setInterval(function () {
 
 setInterval(function () {
 	request({
-		uri: 'http://10.70.161.10:30000/ceph_osd_df_tree',
+		uri: 'http://10.70.160.138:30000/ceph_osd_df_tree',
 		method: 'GET',
 	}, (err, response, body) => {
+		screen.append(cephOsdDfTree);
 		if (!err && response.statusCode === 200) {
-			cephOsdTree.log(body);
-			screen.render();
+			var json = JSON.parse(body)
+			var nodes = json.nodes;
+			var hostList = [];
+			var hostOsdNum = [];
+			for (var i = 0; i < nodes.length; i++) {
+				var type = nodes[i].type;
+				if (type === "host") {
+					hostList.push(nodes[i].name.replace(/.*node/g, "node"));
+					hostOsdNum.push(0);
+				} else if (type === "osd") {
+					hostOsdNum[hostOsdNum.length - 1] += 1;
+				}
+			}
+			cephOsdDfTree.setData({ titles: hostList, data: hostOsdNum });
 		} else {
-			cephOsdTree.log(`request failed: ${response}`);
+			cephOsdDfTree.setData({ titles: [], data: [] });
 		}
+		screen.render();
 	})
 }, 2000);
 
 setInterval(function () {
 	request({
-		uri: 'http://10.70.161.10:30000/snmp',
+		uri: 'http://10.70.160.138:30000/snmp',
 		method: 'GET',
 	}, (err, response, body) => {
 		if (!err && response.statusCode === 200) {
