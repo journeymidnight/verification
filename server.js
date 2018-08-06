@@ -21,7 +21,7 @@ app.get('/ceph_osd_df_tree', function (req, res) {
 });
 
 app.get('/ceph_status', function (req, res) {
-  return getCephinfo(cmdCeph_status,'all');
+  res.send(getCephinfo(cmdCeph_status,'all'));
 });
 
 
@@ -46,21 +46,14 @@ cmdStr:cmdCeph_osd_df_tree,cmdCeph_status
 dataType:all,host,etc
 */
 
-function getCephinfo (cmdStr,dataType) {
+function getCephinfo (cmdStr) {
   exec(cmdStr,function(err,stdout,stderr){
     if(err){
-      console.log('Execute ceph cmmand err:' + stderr);
+      console.log('Execute ceph cmd err:' + stderr + ', cmd:' + cmdStr);
     }
     else{
-      if(dataType == 'all'){
-        return JSON.parse(stdout);
-      }
-      if(cmdStr.indexOf('ceph status') != -1 && dataType == 'Host'){
-        return strCeph_status['quorum_names'];
-      }
-      else {
-        console.log('Execute ceph command err,' + 'cmdStr :' + cmdStr + ',dataType:' + dataType + '.' );
-      }
+      console.log('Execute ceph cmd success:' + cmdStr)
+      return JSON.parse(stdout);
     }
   });  
 }
