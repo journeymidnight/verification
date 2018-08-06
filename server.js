@@ -4,9 +4,6 @@ var exec = require('child_process').exec;
 var snmp = require('snmp-native');
 var util = require('util');
 
-var host = 'localhost';
-var commuity = 'public';
-
 var cmdCeph_osd_df_tree = 'ceph osd df tree --format json-pretty';
 var cmdCeph_status = 'ceph status --format json-pretty';
 
@@ -36,10 +33,24 @@ app.get('/ceph_status', function (req, res) {
   });
 });
 
+var commuity = 'public';
+
+function getHostlist () {
+  exec(cmdCeph_status,function(err,stdout,stderr){
+    if(err){
+      console.log('get hostlist from ceph-status error:' + stderr);
+    }
+    else{
+      var strCeph_status = JSON.parse(stdout);
+      return strCeph_status['quorum_names'];
+    }
+  });  
+}
 
 app.get('/snmp', function (req, res) {
   
-  var session = new snmp.Session({ host: host, community: commuity });
+  var host = getHostlist();
+  var session = new snmp.Session({ host: host[0], community: commuity });
   var oid = [1,3,6,1,4,1,51052,1,1];
 
   session.get({ oid: oid}, function(err, varbinds) {
