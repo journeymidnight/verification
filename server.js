@@ -30,9 +30,28 @@ app.get('/ceph_status', function (req, res) {
 var commuity = 'public';
 var host = 'localhost';
 
+function getHost (cmdStr, callback) {
+  exec(cmdStr,function(err,stdout,stderr){
+    if(err){
+      console.log('Get host list err:' + stderr + ', cmd:' + cmdStr);
+    }
+    else{
+      console.log('Get host list success:' + cmdStr);
+      callback(stdout);
+    }
+  }  
+});
+
+
 app.get('/snmp', function (req, res) {
+
+  getHost（cmdCeph_status,function(host) {
+    console.log("hostlist:" + host);
+  });
   
-  var session = new snmp.Session({ host: host, community: commuity });
+  var session = new snmp.Session({ 
+    host: host, 
+    community: commuity });
   var oid = [1,3,6,1,4,1,51052,1,1];
 
   session.get({ oid: oid}, function(err, varbinds) {
