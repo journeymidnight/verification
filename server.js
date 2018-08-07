@@ -7,24 +7,28 @@ var util = require('util');
 var cmdCeph_osd_df_tree = 'ceph osd df tree --format json-pretty';
 var cmdCeph_status = 'ceph status --format json-pretty';
 
-function getCephinfo (cmdStr,res) {
+function getCephinfo (cmdStr,callback) {
   exec(cmdStr,function(err,stdout,stderr){
     if(err){
       console.log('Execute ceph cmd err:' + stderr + ', cmd:' + cmdStr);
     }
     else{
       console.log('Execute ceph cmd success:' + cmdStr);
-      res.send(stdout);
+      callback(stdout);
     }
   });  
 }
 
 app.get('/ceph_osd_df_tree', function (req, res) {
-  getCephinfo(cmdCeph_osd_df_tree,res);
+  getCephinfo(cmdCeph_osd_df_tree,function(ceph_osd_df_tree){
+    res.send(ceph_osd_df_tree);
+  });
 });
 
 app.get('/ceph_status', function (req, res) {
-  getCephinfo(cmdCeph_status,res);
+  getCephinfo(cmdCeph_status,function(ceph_status){
+    res.send(ceph_status);
+  });
 });
 
 var commuity = 'public';
@@ -49,6 +53,7 @@ app.get('/snmp', function (req, res) {
     console.log("hostlist:" + hostlist.quorum_names);
   });
   
+
   var session = new snmp.Session({ 
     host: host, 
     community: commuity });
