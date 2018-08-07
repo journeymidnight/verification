@@ -45,12 +45,13 @@ function getSnmpinfo (host, community, callback) {
       console.log('Get SNMP info error:' + err);
     }
     else {
-        //varbinds.forEach(function(vb) {
+      varbinds.forEach(function(vb) {
         console.log('Get SNMP info success,HOST:' + host + ',OID:' + oid);      
         //res.send(vb.oid + ' = ' + vb.value + ' (' + vb.type + ')');
-        //var snmpStr = snmpStr + vb.oid + ' = ' + vb.value + ' (' + vb.type + ')'
-        console.log('snmpStr:' + varbinds);
-        callback(varbinds);
+        var snmpStr = snmpStr + vb.oid + ' = ' + vb.value + ' (' + vb.type + ')'
+        //console.log('snmpStr:' + varbinds);
+      });
+      callback(varbinds);
     }
     session.close();
   });
