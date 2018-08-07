@@ -56,12 +56,12 @@ setInterval(function () {
 			list.push(json.health.status);
 			list.push(json.monmap.fsid);
 			var mapModules = json.mgrmap.modules;
-			for (var i = 0; i < mapModules.length; i++) {
-				list.push(mapModules[i]);
-			}
-			for (var i = 0; i < list.length; i++) {
-				cephStatus.log(list[i]);
-			}
+			mapModules.forEach(function (moduleName) {
+				list.push(moduleName);
+			});
+			list.forEach(function (info) {
+				cephStatus.log(info);
+			});
 			screen.render();
 		} else {
 			cephStatus.log(`request failed: ${response}`);
@@ -80,15 +80,15 @@ setInterval(function () {
 			var nodes = json.nodes;
 			var hostList = [];
 			var hostOsdNum = [];
-			for (var i = 0; i < nodes.length; i++) {
-				var type = nodes[i].type;
+			nodes.forEach(function (node) {
+				var type = node.type;
 				if (type === "host") {
-					hostList.push(nodes[i].name.replace(/.*node/g, "node"));
+					hostList.push(node.name.replace(/.*node/g, "node"));
 					hostOsdNum.push(0);
 				} else if (type === "osd") {
 					hostOsdNum[hostOsdNum.length - 1] += 1;
 				}
-			}
+			});
 			cephOsdDfTree.setData({ titles: hostList, data: hostOsdNum });
 		} else {
 			cephOsdDfTree.setData({ titles: [], data: [] });
