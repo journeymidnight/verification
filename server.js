@@ -48,9 +48,9 @@ function getSnmpinfo (host, community, callback) {
         //varbinds.forEach(function(vb) {
         console.log('Get SNMP info success,HOST:' + host + ',OID:' + oid);      
         //res.send(vb.oid + ' = ' + vb.value + ' (' + vb.type + ')');
-        var snmpStr = snmpStr + vb.oid + ' = ' + vb.value + ' (' + vb.type + ')'
-        console.log('snmpStr:' + snmpStr);
-        callback(snmpStr);
+        //var snmpStr = snmpStr + vb.oid + ' = ' + vb.value + ' (' + vb.type + ')'
+        console.log('snmpStr:' + varbinds);
+        callback(varbinds);
     }
     session.close();
   });
