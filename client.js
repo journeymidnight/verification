@@ -53,19 +53,44 @@ setInterval(function () {
 		if (!err && response.statusCode === 200) {
 			var json = JSON.parse(body);
 			var list = [];
-			list.push(json.health.status);
-			list.push(json.monmap.fsid);
-			var mapModules = json.mgrmap.modules;
-			mapModules.forEach(function (moduleName) {
-				list.push(moduleName);
+			list.push("status: " + json.health.status);
+
+			var mons = json.monmap.mons;
+			mons.forEach(function (mon) {
+				list.push(mon.addr)
 			});
+
+			list.push("osd num: " + json.osdmap.osdmap.num_osds
+				+ " num up: " + json.osdmap.osdmap.num_up_osds
+				+ " num in: " + json.osdmap.osdmap.num_in_osds);
+
+			var mapModules = json.mgrmap.modules;
+			var moduleNames = "modules: ";
+			mapModules.forEach(function (moduleName) {
+				moduleNames += moduleName + " ";
+			});
+			list.push(moduleNames);
+			list.push("available modules: ");
+			var available_modules = json.mgrmap.available_modules;
+			var availableModuleNames = "";
+			for (var i = 0; i < available_modules.length; i++) {
+				availableModuleNames += available_modules[i] + " ";
+				if (i % 3 === 2) {
+					list.push(availableModuleNames);
+					availableModuleNames = "";
+				}
+			}
+			if (availableModuleNames !== "") {
+				list.push(availableModuleNames);
+			}
 			list.forEach(function (info) {
 				cephStatus.log(info);
 			});
-			screen.render();
+			cephStatus.log("");
 		} else {
 			cephStatus.log(`request failed: ${response}`);
 		}
+		screen.render();
 	})
 }, 2000);
 
@@ -89,9 +114,15 @@ setInterval(function () {
 					hostOsdNum[hostOsdNum.length - 1] += 1;
 				}
 			});
-			cephOsdDfTree.setData({ titles: hostList, data: hostOsdNum });
+			cephOsdDfTree.setData({
+				titles: hostList,
+				data: hostOsdNum
+			});
 		} else {
-			cephOsdDfTree.setData({ titles: [], data: [] });
+			cephOsdDfTree.setData({
+				titles: [],
+				data: []
+			});
 		}
 		screen.render();
 	})
@@ -104,9 +135,9 @@ setInterval(function () {
 	}, (err, response, body) => {
 		if (!err && response.statusCode === 200) {
 			snmpInfo.log(body);
-			screen.render();
 		} else {
 			snmpInfo.log(`request failed: ${response}`);
 		}
+		screen.render();
 	})
 }, 2000);
