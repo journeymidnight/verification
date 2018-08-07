@@ -7,27 +7,25 @@ var util = require('util');
 var cmdCeph_osd_df_tree = 'ceph osd df tree --format json-pretty';
 var cmdCeph_status = 'ceph status --format json-pretty';
 
-function getCephinfo (cmdStr,callback) {
+function getCephinfo (cmdStr,res) {
   exec(cmdStr,function(err,stdout,stderr){
     if(err){
       console.log('Execute ceph cmd err:' + stderr + ', cmd:' + cmdStr);
     }
     else{
       console.log('Execute ceph cmd success:' + cmdStr);
-      callback(stdout);
+      res.send(stdout);
     }
   });  
 }
 
 app.get('/ceph_osd_df_tree', function (req, res) {
-  var json = getCephinfo(cmdCeph_osd_df_tree,function(d)));
-  res.send(json);
+  getCephinfo(cmdCeph_osd_df_tree,res);
 }
 
 app.get('/ceph_status', function (req, res) {
   getCephinfo(cmdCeph_status,res);
 });
-
 
 var commuity = 'public';
 var host = 'localhost';
