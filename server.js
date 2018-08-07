@@ -75,13 +75,13 @@ app.get('/snmp', function (req, res) {
   getHost(cmdCeph_status,function(host) {
     var sources = JSON.parse(host);
     var hostLists = sources.quorum_names;
-    hostLists.forEach(function (hostList) {
-      console.log("host:" + hostList);
-      getSnmpinfo(hostList, community, function(snmpInfo) {
+    //hostLists.forEach(function (hostList) {
+      console.log("host:" + hostLists.0);
+      getSnmpinfo(hostList.0, community, function(snmpInfo) {
         console.log('snmpinfo:' + snmpInfo);
         //snmpInfo += snmpInfo;
         res.send(snmpInfo);
-      });
+    //});
       //res.send(snmpInfo);
     });
   });
