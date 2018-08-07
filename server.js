@@ -40,12 +40,12 @@ function getHost (cmdStr, callback) {
       callback(stdout);
     }
   });  
-});
+}
 
 
 app.get('/snmp', function (req, res) {
 
-  getHost（cmdCeph_status,function(host) {
+  getHost(cmdCeph_status,function(host) {
     console.log("hostlist:" + host);
   });
   
