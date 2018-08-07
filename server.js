@@ -78,11 +78,12 @@ app.get('/snmp', function (req, res) {
         console.log('Get SNMP info error,host:' + hostList);
       }
       else {
+        console.log('snmpinfo:' + snmpInfo);
         snmpInfo += snmpInfo;
         //res.send(snmpInfo);
       }
       });
-      res.send(snmpInfo);
+      //res.send(snmpInfo);
     });
     
 
