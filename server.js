@@ -49,6 +49,7 @@ function getSnmpinfo (host, community, callback) {
         console.log('Get SNMP info success,HOST:' + host + ',OID:' + oid);      
         //res.send(vb.oid + ' = ' + vb.value + ' (' + vb.type + ')');
         var snmpStr = snmpStr + vb.oid + ' = ' + vb.value + ' (' + vb.type + ')'
+        console.log('snmpStr:' + snmpStr);
         callback(snmpStr);
     }
     session.close();
@@ -74,19 +75,12 @@ app.get('/snmp', function (req, res) {
     hostLists.forEach(function (hostList) {
       console.log("host:" + hostList);
       getSnmpinfo(hostList, community, function(snmpInfo) {
-      if(err) {
-        console.log('Get SNMP info error,host:' + hostList);
-      }
-      else {
         console.log('snmpinfo:' + snmpInfo);
-        snmpInfo += snmpInfo;
-        //res.send(snmpInfo);
-      }
+        //snmpInfo += snmpInfo;
+        res.send(snmpInfo);
       });
       //res.send(snmpInfo);
     });
-    
-
   });
 });
 
