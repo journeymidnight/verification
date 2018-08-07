@@ -45,7 +45,7 @@ function getSnmpinfo (host, community, callback) {
       console.log('Get SNMP info error:' + err);
     }
     else {
-      varbinds.forEach(function(vb) {
+        //varbinds.forEach(function(vb) {
         console.log('Get SNMP info success,HOST:' + host + ',OID:' + oid);      
         //res.send(vb.oid + ' = ' + vb.value + ' (' + vb.type + ')');
         var snmpStr = snmpStr + vb.oid + ' = ' + vb.value + ' (' + vb.type + ')'
@@ -71,15 +71,21 @@ app.get('/ceph_status', function (req, res) {
 app.get('/snmp', function (req, res) {
   getHost(cmdCeph_status,function(host) {
     var sources = JSON.parse(host);
-    console.log("hostlist:" + sources.quorum_names);
     var hostLists = sources.quorum_names;
     hostLists.forEach(function (hostList) {
       console.log("host:" + hostList);
       getSnmpinfo(hostList, community, function(snmpInfo) {
-        //snmpInfo += snmpInfo;
-        res.send(snmpInfo);
+      if(err) {
+        console.log('Get SNMP info error,host:' + hostList);
+      }
+      else {
+        snmpInfo += snmpInfo;
+        //res.send(snmpInfo);
+      }
       });
+      res.send(snmpInfo);
     });
+    
 
   });
 });
