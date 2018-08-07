@@ -74,6 +74,7 @@ app.get('/snmp', function (req, res) {
     console.log("hostlist:" + sources.quorum_names);
     var hostLists = sources.quorum_names;
     hostLists.forEach(function (hostList) ){
+      console.log("host:" + hostList);
       getSnmpinfo(hostList, community, function(snmpInfo)) {
         //snmpInfo += snmpInfo;
         res.send(snmpInfo);
