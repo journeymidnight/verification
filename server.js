@@ -39,7 +39,7 @@ function getHost (cmdStr, callback) {
       console.log('Get host list success:' + cmdStr);
       callback(stdout);
     }
-  }  
+  });  
 });
 
 
