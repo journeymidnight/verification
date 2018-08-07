@@ -42,11 +42,11 @@ function getHost (cmdStr, callback) {
   });  
 }
 
-
 app.get('/snmp', function (req, res) {
 
   getHost(cmdCeph_status,function(host) {
-    console.log("hostlist:" + host);
+    var hostlist = JSON.parse(host);
+    console.log("hostlist:" + hostlist.quorum_names);
   });
   
   var session = new snmp.Session({ 
