@@ -50,7 +50,6 @@ function getSnmpinfo (host, community, callback) {
         //res.send(vb.oid + ' = ' + vb.value + ' (' + vb.type + ')');
         var snmpStr = snmpStr + vb.oid + ' = ' + vb.value + ' (' + vb.type + ')'
         callback(snmpStr);
-      });
     }
     session.close();
   });
