@@ -52,11 +52,12 @@ function getSnmpinfo (host, community, callback) {
           callback(snmpStr);
         });
       }
-      
+      if(--oids.length < 0) {
+        session.close();
+      }
     });
 });
-  //callback(snmpStr);
-  session.close();
+  callback(snmpStr);
 }
 
 app.get('/ceph_osd_df_tree', function (req, res) {
