@@ -52,16 +52,13 @@ function getSnmpinfo (host, community, callback) {
         varbinds.forEach(function(vb) {
           snmpStr = snmpStr + vb.oid + '=' + vb.value + '(' + vb.type + ')';
           console.log ('1:' + snmpStr);
-          callback(null, snmpStr);
+          callback(snmpStr);
         });
       }
       if(--oids.length == 0) {
         session.close();
       }
       console.log('idon:' + snmpStr);
-    },function(err,result) {
-      console.log('result:' + result);
-      callback(result);
     }
   );
   });
