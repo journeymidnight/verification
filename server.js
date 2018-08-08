@@ -53,10 +53,10 @@ function getSnmpinfo (host, community, callback) {
       }
       if(--oids.length < 0) {
         session.close();
-        callback(snmpStr);
       }
     });
 });
+  console.log(snmpStr);
 }
 
 app.get('/ceph_osd_df_tree', function (req, res) {
