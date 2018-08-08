@@ -80,8 +80,7 @@ app.get('/host_list', function (req, res) {
 
 app.get('/snmp/:hostname', function (req, res) {
   var host = req.param.hostname;
-  var snmpInfos = '';
-  getSnmpinfo(hostList, community, function(snmpInfo) {
+  getSnmpinfo(host, community, function(snmpInfo) {
     res.send(snmpInfo);
   });
 });
