@@ -47,7 +47,7 @@ function getSnmpinfo (host, community, callback) {
               [1,3,6,1,4,1,51052,1,5,0] 
             ];
 
-  session.get({ oid: oid}, function(err, varbinds) {
+  session.getAll({ oids: oids}, function(err, varbinds) {
     if(err) {
       console.log('Get SNMP info error:' + err);
     }
