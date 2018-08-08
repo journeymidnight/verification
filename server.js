@@ -54,7 +54,7 @@ function getSnmpinfo (host, community, callback) {
       }
       if(--oids.length == 0) {
         session.close();
-        console.log('close:' + snmpStr);
+        console.log('Get oids snmpinfo success:' + snmpStr);
         callback(snmpStr);
       }
     });
