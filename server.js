@@ -40,7 +40,7 @@ function getSnmpinfo (host, community, callback) {
     host: host, 
     community: community });
   var oid = [1,3,6,1,4,1,51052,1];
-  var oids = [[1,3,6,1,4,1,50152,1,1,0],[1,3,6,1,4,1,50152,1,2,0]];
+  var oids = [[1,3,6,1,4,1,51052,1,1,0],[1,3,6,1,4,1,51052,1,2,0]];
 
   session.getAll({ oids: oids}, function(err, varbinds) {
     if(err) {
