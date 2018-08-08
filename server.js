@@ -83,7 +83,7 @@ app.get('/snmp', function (req, res) {
         snmpInfo += snmpInfo;
         //res.send(snmpInfo);
     });
-      res.send(snmpInfo);
+      //res.send(snmpInfo);
     });
   });
 });
