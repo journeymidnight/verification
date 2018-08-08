@@ -55,9 +55,11 @@ function getSnmpinfo (host, community, callback) {
       if(--oids.length = 0) {
         session.close();
       }
+      console.log('idon:' + snmpStr);
     });
+    console.log('2:' + snmpStr);
 });
-  console.log('2:' + snmpStr);
+  console.log('3:' + snmpStr);
 }
 
 app.get('/ceph_osd_df_tree', function (req, res) {
