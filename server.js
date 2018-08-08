@@ -39,7 +39,13 @@ function getSnmpinfo (host, community, callback) {
   var session = new snmp.Session({ 
     host: host, 
     community: community });
-  var oid = [1,3,6,1,4,1,51052,1,1,0];
+  var oids = [
+              [1,3,6,1,4,1,51052,1,1,0],
+              [1,3,6,1,4,1,51052,1,2,0],
+              [1,3,6,1,4,1,51052,1,3,0],
+              [1,3,6,1,4,1,51052,1,4,0],
+              [1,3,6,1,4,1,51052,1,5,0] 
+            ];
 
   session.get({ oid: oid}, function(err, varbinds) {
     if(err) {
