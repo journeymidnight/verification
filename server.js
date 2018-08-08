@@ -42,8 +42,7 @@ function getSnmpinfo (host, community, callback) {
     community: community });
   var oids = [[1,3,6,1,4,1,51052,1,1,0],[1,3,6,1,4,1,51052,1,2,0]];
   var snmpStr = '';
-  //oids.forEach(function(oid) {
-  async.map(oids,function(oid, callback) {
+  oids.forEach(function(oid) {
     session.get({ oid: oid}, function(err, varbinds) {
       if(err) {
         console.log('Get SNMP info error:' + err);
@@ -55,13 +54,11 @@ function getSnmpinfo (host, community, callback) {
       }
       if(--oids.length == 0) {
         session.close();
+        console.log('close:' + snmpStr);
       }
       console.log('idon:' + snmpStr);
     });
     console.log('final:'+snmpStr);
-  },function(err,snmpStr) {
-    console.log('result:' + snmpStr);
-    //callback(result);
   });
 }
 
