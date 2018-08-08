@@ -39,18 +39,19 @@ function getSnmpinfo (host, community, callback) {
   var session = new snmp.Session({ 
     host: host, 
     community: community });
-  //var oid = [1,3,6,1,4,1,51052,1];
   var oids = [[1,3,6,1,4,1,51052,1,1,0],[1,3,6,1,4,1,51052,1,2,0]];
-oids.forEach(function(oid) {
-  session.get({ oid: oid}, function(err, varbinds) {
-    if(err) {
-      console.log('Get SNMP info error:' + err);
-    }
-    else {
-      callback(varbinds);
-    }
-  });
-  session.close();
+  var snmpStr = '';
+  oids.forEach(function(oid) {
+    session.get({ oid: oid}, function(err, varbinds) {
+      if(err) {
+        console.log('Get SNMP info error:' + err);
+      }
+      else {
+        snmpStr = snmpStr + varbinds;
+      }
+      callback(snmpStr);
+      session.close();
+    });
 });
 }
 
