@@ -55,7 +55,7 @@ function getSnmpinfo (host, community, callback) {
       if(--oids.length == 0) {
         session.close();
         console.log('close:' + snmpStr);
-        callback(null,varbinds);
+        callback(snmpStr);
       }
     });
   });
