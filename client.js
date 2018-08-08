@@ -53,6 +53,7 @@ setInterval(function () {
 		if (!err && response.statusCode === 200) {
 			var json = JSON.parse(body);
 			var list = [];
+			list.push((new Date()).toString());
 			list.push("status: " + json.health.status);
 
 			var mons = json.monmap.mons;
@@ -60,7 +61,7 @@ setInterval(function () {
 				list.push(mon.addr)
 			});
 
-			list.push("osd num: " + json.osdmap.osdmap.num_osds
+			list.push("num osds: " + json.osdmap.osdmap.num_osds
 				+ " num up: " + json.osdmap.osdmap.num_up_osds
 				+ " num in: " + json.osdmap.osdmap.num_in_osds);
 
@@ -71,10 +72,10 @@ setInterval(function () {
 			});
 			list.push(moduleNames);
 			list.push("available modules: ");
-			var available_modules = json.mgrmap.available_modules;
+			var availableModules = json.mgrmap.available_modules;
 			var availableModuleNames = "";
-			for (var i = 0; i < available_modules.length; i++) {
-				availableModuleNames += available_modules[i] + " ";
+			for (var i = 0; i < availableModules.length; i++) {
+				availableModuleNames += availableModules[i] + " ";
 				if (i % 3 === 2) {
 					list.push(availableModuleNames);
 					availableModuleNames = "";
@@ -130,11 +131,25 @@ setInterval(function () {
 
 setInterval(function () {
 	request({
-		uri: 'http://10.70.160.138:30000/snmp',
+		uri: 'http://10.70.160.138:30000/host_list',
 		method: 'GET',
 	}, (err, response, body) => {
 		if (!err && response.statusCode === 200) {
-			snmpInfo.log(body);
+			list = [];
+			var json = JSON.parse(body);
+			json.forEach(function (hostname) {
+				request({
+					uri: 'http://10.70.160.138:30000/snmp/' + hostname,
+					method: 'GET',
+				}, (err, response, body) => {
+					if (!err && response.statusCode === 200) {
+						snmpInfo.log(hostname);
+						snmpInfo.log(body);
+					} else {
+						snmpInfo.log(`request failed: ${response}`);
+					}
+				});
+			});
 		} else {
 			snmpInfo.log(`request failed: ${response}`);
 		}
