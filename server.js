@@ -29,7 +29,8 @@ function getHost (cmdStr, callback) {
     }
     else{
       console.log('Get host list success:' + cmdStr);
-      callback(stdout);
+      var tmpList = JSON.parse(stdout);
+      callback(tmpList.quorum_names);
     }
   });  
 }
