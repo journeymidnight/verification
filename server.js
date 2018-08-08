@@ -49,6 +49,7 @@ function getSnmpinfo (host, community, callback) {
       else {
         varbinds.forEach(function(vb) {
           snmpStr = snmpStr + vb.oid + '=' + vb.value + '(' + vb.type + ')';
+          console.log (snmpStr);
         });
       }
       if(--oids.length < 0) {
