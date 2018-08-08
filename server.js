@@ -79,10 +79,10 @@ app.get('/snmp', function (req, res) {
     hostLists.forEach(function (hostList) {
       console.log("host:" + hostList);
       getSnmpinfo(hostList, community, function(snmpInfo) {
-        console.log('snmpinfo:' + snmpInfo);
         snmpInfo += snmpInfo;
         //res.send(snmpInfo);
     });
+      console.log('snmpinfo:' + snmpInfo);
       //res.send(snmpInfo);
     });
   });
