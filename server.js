@@ -47,7 +47,9 @@ function getSnmpinfo (host, community, callback) {
         console.log('Get SNMP info error:' + err);
       }
       else {
-        snmpStr = snmpStr + varbinds;
+        varbinds.forEach(function(vb) {
+          snmpStr = snmpStr + vb.oid + '=' + vb.value + '(' + vb.type + ')';
+        }
       }
       callback(snmpStr);
       session.close();
