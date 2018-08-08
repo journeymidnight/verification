@@ -71,20 +71,17 @@ app.get('/ceph_status', function (req, res) {
   });
 });
 
-app.get('/snmp', function (req, res) {
-  getHost(cmdCeph_status,function(host) {
-    var sources = JSON.parse(host);
-    var hostLists = sources.quorum_names;
-    var snmpInfos = '';
-    hostLists.forEach(function (hostList) {
-      console.log("host:" + hostList);
-      getSnmpinfo(hostList, community, function(snmpInfo) {
-        snmpInfos = snmpInfos + snmpInfo;
-        //res.send(snmpInfo);
-    });
-      console.log('snmpinfo:' + snmpInfos);
-      //res.send(snmpInfo);
-    });
+app.get('/host_list', function (req, res) {
+  getHost(cmdCeph_status,function(host_list){
+    res.send(host_list);
+  });
+});
+
+app.get('/snmp/:hostname', function (req, res) {
+  var host = req.param.hostname;
+  var snmpInfos = '';
+  getSnmpinfo(hostList, community, function(snmpInfo) {
+    res.send(snmpInfo);
   });
 });
 
