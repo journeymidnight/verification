@@ -41,24 +41,19 @@ function getSnmpinfo (host, community, callback) {
     community: community });
   var oid = [1,3,6,1,4,1,51052,1];
   var oids = [[1,3,6,1,4,1,51052,1,1,0],[1,3,6,1,4,1,51052,1,2,0]];
-
-  session.getAll({ oids: oids}, function(err, varbinds) {
+oids.forEach(function(oid) {
+  session.get({ oid: oid}, function(err, varbinds) {
     if(err) {
       console.log('Get SNMP info error:' + err);
     }
     else {
-      var snmpStr = '';
-      varbinds.forEach(function(vb) {
-        console.log('Get SNMP info success,HOST:' + host + ',OID:' + vb.oid);      
-        //console.log(vb.oid + ' = ' + vb.value + ' (' + vb.type + ')');
-        snmpStr = snmpStr + vb.oid + ' = ' + vb.value + ' (' + vb.type + ')'
-        //console.log('snmpStr:' + varbinds);
-      });
-      //console.log("snmpStr : " + snmpStr);
-      callback(snmpStr);
+      callback(varbinds);
     }
-    session.close();
+    if (--cnt ===0 ) {
+      session.close();
+    }
   });
+}(oid));
 }
 
 app.get('/ceph_osd_df_tree', function (req, res) {
