@@ -51,10 +51,10 @@ function getSnmpinfo (host, community, callback) {
           snmpStr = snmpStr + vb.oid + '=' + vb.value + '(' + vb.type + ')';
         });
       }
-      callback(snmpStr);
       session.close();
     });
 });
+  callback(snmpStr);
 }
 
 app.get('/ceph_osd_df_tree', function (req, res) {
