@@ -52,9 +52,11 @@ function getSnmpinfo (host, community, callback) {
           console.log (snmpStr);
         });
       }
+      if(--oids.length < 0) {
         session.close();
+      }
     });
-});
+}(oid));
   console.log(snmpStr);
 }
 
