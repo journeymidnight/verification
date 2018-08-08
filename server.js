@@ -49,15 +49,15 @@ function getSnmpinfo (host, community, callback) {
       else {
         varbinds.forEach(function(vb) {
           snmpStr = snmpStr + vb.oid + '=' + vb.value + '(' + vb.type + ')';
-          console.log (snmpStr);
+          console.log ('1:' + snmpStr);
         });
       }
-      if(--oids.length < 0) {
+      if(--oids.length = 0) {
         session.close();
       }
-    }(oid));
+    });
 });
-  console.log(snmpStr);
+  console.log('2:' + snmpStr);
 }
 
 app.get('/ceph_osd_df_tree', function (req, res) {
