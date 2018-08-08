@@ -54,6 +54,7 @@ function getSnmpinfo (host, community, callback) {
       }
       if(--oids.length < 0) {
         session.close();
+        break;
       }
     });
 });
