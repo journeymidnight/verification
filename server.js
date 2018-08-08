@@ -56,8 +56,8 @@ function getSnmpinfo (host, community, callback) {
         session.close();
       }
     });
-}(oid));
-  callback(snmpStr);
+    callback(snmpStr);
+});
 }
 
 app.get('/ceph_osd_df_tree', function (req, res) {
