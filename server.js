@@ -49,10 +49,8 @@ oids.forEach(function(oid) {
     else {
       callback(varbinds);
     }
-    if (--cnt ===0 ) {
-      session.close();
-    }
   });
+  session.close();
 });
 }
 
