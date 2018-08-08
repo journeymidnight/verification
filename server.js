@@ -2,6 +2,7 @@ var express = require('express');
 var app = express();
 var exec = require('child_process').exec;
 var snmp = require('snmp-native');
+var async = require('async');
 var util = require('util');
 
 var cmdCeph_osd_df_tree = 'ceph osd df tree --format json-pretty';
@@ -41,7 +42,8 @@ function getSnmpinfo (host, community, callback) {
     community: community });
   var oids = [[1,3,6,1,4,1,51052,1,1,0],[1,3,6,1,4,1,51052,1,2,0]];
   var snmpStr = '';
-  oids.forEach(function(oid) {
+  //oids.forEach(function(oid) {
+  async.map(oids,function(oid, callback) {
     session.get({ oid: oid}, function(err, varbinds) {
       if(err) {
         console.log('Get SNMP info error:' + err);
@@ -50,15 +52,19 @@ function getSnmpinfo (host, community, callback) {
         varbinds.forEach(function(vb) {
           snmpStr = snmpStr + vb.oid + '=' + vb.value + '(' + vb.type + ')';
           console.log ('1:' + snmpStr);
+          callback（null, snmpStr);
         });
       }
-      if(--oids.length = 0) {
+      if(--oids.length == 0) {
         session.close();
       }
       console.log('idon:' + snmpStr);
-    });
+    },function(err,result) {
+      callback(result);
+    }
+  );
     console.log('2:' + snmpStr);
-});
+  });
   console.log('3:' + snmpStr);
 }
 
