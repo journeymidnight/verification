@@ -58,9 +58,9 @@ function getSnmpinfo (host, community, callback) {
       }
       console.log('idon:' + snmpStr);
       callback(snmpStr);
-    }
+    });
     console.log('final:'+snmpStr);
-  );
+  });
   });
 }
 
