@@ -29,7 +29,8 @@ function getHost (cmdStr, callback) {
     }
     else{
       console.log('Get host list success:' + cmdStr);
-      callback(stdout);
+      var tmpList = JSON.parse(stdout);
+      callback(tmpList.quorum_names);
     }
   });  
 }
@@ -45,7 +46,7 @@ function getSnmpinfo (host, community, callback) {
       console.log('Get SNMP info error:' + err);
     }
     else {
-      var snmpStr;
+      var snmpStr = '';
       varbinds.forEach(function(vb) {
         console.log('Get SNMP info success,HOST:' + host + ',OID:' + oid);      
         //res.send(vb.oid + ' = ' + vb.value + ' (' + vb.type + ')');
@@ -71,19 +72,16 @@ app.get('/ceph_status', function (req, res) {
   });
 });
 
-app.get('/snmp', function (req, res) {
-  getHost(cmdCeph_status,function(host) {
-    var sources = JSON.parse(host);
-    var hostLists = sources.quorum_names;
-    //hostLists.forEach(function (hostList) {
-      console.log("host:" + hostLists[0]);
-      getSnmpinfo(hostLists[0], community, function(snmpInfo) {
-        console.log('snmpinfo:' + snmpInfo);
-        //snmpInfo += snmpInfo;
-        res.send(snmpInfo);
-    //});
-      //res.send(snmpInfo);
-    });
+app.get('/host_list', function (req, res) {
+  getHost(cmdCeph_status,function(host_list){
+    res.send(host_list);
+  });
+});
+
+app.get('/snmp/:hostname', function (req, res) {
+  var host = req.param.hostname;
+  getSnmpinfo(host, community, function(snmpInfo) {
+    res.send(snmpInfo);
   });
 });
 
