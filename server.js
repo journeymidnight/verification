@@ -39,7 +39,7 @@ function getSnmpinfo (host, community, callback) {
   var session = new snmp.Session({ 
     host: host, 
     community: community });
-  var oid = [1,3,6,1,4,1,51052,1],
+  var oid = [1,3,6,1,4,1,51052,1];
 
   session.getSubtree({ oid: oid}, function(err, varbinds) {
     if(err) {
