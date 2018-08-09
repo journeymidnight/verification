@@ -79,7 +79,7 @@ function getSnmpinfo (host, community, callback) {
       }
       if(--oids.length == 0) {
         session.close();
-        console.log('Get oids snmpinfo success.');
+        console.log('Get oids snmpinfo success. host:' + host);
         callback(snmpStr);
       }
     });
@@ -104,7 +104,7 @@ function getPrometheusinfo (host, path, callback) {
     });
     res.on('end', function(){
       var data = Buffer.concat(chunks, size);
-      console.log('Get Prometheus monitoring info success.');
+      console.log('Get Prometheus monitoring info success. host:' + host);
       callback(data.toString());
     });
   }).on('error', function(e) {
