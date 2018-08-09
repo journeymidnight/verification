@@ -2,6 +2,7 @@ var express = require('express');
 var app = express();
 var exec = require('child_process').exec;
 var snmp = require('snmp-native');
+var async = require('async');
 var util = require('util');
 
 var cmdCeph_osd_df_tree = 'ceph osd df tree --format json-pretty';
@@ -39,25 +40,24 @@ function getSnmpinfo (host, community, callback) {
   var session = new snmp.Session({ 
     host: host, 
     community: community });
-  var oid = [1,3,6,1,4,1,51052,1];
   var oids = [[1,3,6,1,4,1,51052,1,1,0],[1,3,6,1,4,1,51052,1,2,0]];
-
-  session.getAll({ oids: oids}, function(err, varbinds) {
-    if(err) {
-      console.log('Get SNMP info error:' + err);
-    }
-    else {
-      var snmpStr = '';
-      varbinds.forEach(function(vb) {
-        console.log('Get SNMP info success,HOST:' + host + ',OID:' + vb.oid);      
-        //console.log(vb.oid + ' = ' + vb.value + ' (' + vb.type + ')');
-        snmpStr = snmpStr + vb.oid + ' = ' + vb.value + ' (' + vb.type + ')'
-        //console.log('snmpStr:' + varbinds);
-      });
-      //console.log("snmpStr : " + snmpStr);
-      callback(snmpStr);
-    }
-    session.close();
+  var snmpStr = '';
+  oids.forEach(function(oid) {
+    session.get({ oid: oid}, function(err, varbinds) {
+      if(err) {
+        console.log('Get SNMP info error:' + err);
+      }
+      else {
+        varbinds.forEach(function(vb) {
+          snmpStr = snmpStr + vb.oid + '=' + vb.value + '(' + vb.type + ')';
+        });
+      }
+      if(--oids.length == 0) {
+        session.close();
+        console.log('Get oids snmpinfo success:' + snmpStr);
+        callback(snmpStr);
+      }
+    });
   });
 }
 
