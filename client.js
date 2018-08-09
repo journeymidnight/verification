@@ -14,7 +14,9 @@ var log = grid.set(0, 8, 4, 4, contrib.log, { fg: "red", label: 'server log' });
 
 var cephStatus = grid.set(4, 0, 4, 4, contrib.log, { fg: "green", label: 'Ceph Status' });
 
-var cephOsdDfTree = grid.set(4, 4, 4, 4, contrib.bar, { label: 'Ceph OSD Df Tree', barWidth: 8, barSpacing: 6, xOffset: 0, maxHeight: 30 });
+var cephOsdDfTreeGraph = grid.set(4, 4, 4, 2, contrib.bar, { label: 'Ceph OSD Df Tree', barWidth: 8, barSpacing: 6, xOffset: 0, maxHeight: 30 });
+
+var cephOsdDfTreeData = grid.set(4, 6, 4, 2, contrib.log, { label: "OSD Tree" });
 
 var snmpInfo = grid.set(4, 8, 4, 4, contrib.log, { fg: "green", label: 'SNMP' });
 
@@ -33,7 +35,7 @@ setTimeout(() => {
 }, 2000);
 
 request({
-	uri: 'http://10.70.160.138:30000/',
+	uri: 'http://10.70.161.10:30000/',
 	method: 'GET',
 }, (err, response, body) => {
 	if (!err && response.statusCode === 200) {
@@ -47,7 +49,7 @@ request({
 
 setInterval(function () {
 	request({
-		uri: 'http://10.70.160.138:30000/ceph_status',
+		uri: 'http://10.70.161.10:30000/ceph_status',
 		method: 'GET',
 	}, (err, response, body) => {
 		if (!err && response.statusCode === 200) {
@@ -97,30 +99,43 @@ setInterval(function () {
 
 setInterval(function () {
 	request({
-		uri: 'http://10.70.160.138:30000/ceph_osd_df_tree',
+		uri: 'http://10.70.161.10:30000/ceph_osd_df_tree',
 		method: 'GET',
 	}, (err, response, body) => {
-		screen.append(cephOsdDfTree);
+		screen.append(cephOsdDfTreeGraph);
 		if (!err && response.statusCode === 200) {
 			var json = JSON.parse(body)
 			var nodes = json.nodes;
 			var hostList = [];
 			var hostOsdNum = [];
+			var textData = [];
+			var osds = "";
 			nodes.forEach(function (node) {
 				var type = node.type;
 				if (type === "host") {
 					hostList.push(node.name.replace(/.*node/g, "node"));
 					hostOsdNum.push(0);
+					if (osds.length !== 0) {
+						textData.push(osds);
+						osds = "";
+					}
+					textData.push(node.name);
 				} else if (type === "osd") {
 					hostOsdNum[hostOsdNum.length - 1] += 1;
+					osds += "  " + node.name;
 				}
 			});
-			cephOsdDfTree.setData({
+			textData.push(osds);
+			textData.push("");
+			cephOsdDfTreeGraph.setData({
 				titles: hostList,
 				data: hostOsdNum
 			});
+			textData.forEach(function (data) {
+				cephOsdDfTreeData.log(data);
+			});
 		} else {
-			cephOsdDfTree.setData({
+			cephOsdDfTreeGraph.setData({
 				titles: [],
 				data: []
 			});
@@ -130,16 +145,17 @@ setInterval(function () {
 }, 2000);
 
 setInterval(function () {
+	// 获取主机名列表
 	request({
-		uri: 'http://10.70.160.138:30000/host_list',
+		uri: 'http://10.70.161.10:30000/host_list',
 		method: 'GET',
 	}, (err, response, body) => {
 		if (!err && response.statusCode === 200) {
-			list = [];
 			var json = JSON.parse(body);
 			json.forEach(function (hostname) {
+				// 每个主机的snmp信息单独获取
 				request({
-					uri: 'http://10.70.160.138:30000/snmp/' + hostname,
+					uri: 'http://10.70.161.10:30000/snmp/' + hostname,
 					method: 'GET',
 				}, (err, response, body) => {
 					if (!err && response.statusCode === 200) {
