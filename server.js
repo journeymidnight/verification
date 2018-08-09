@@ -79,7 +79,7 @@ function getSnmpinfo (host, community, callback) {
       }
       if(--oids.length == 0) {
         session.close();
-        console.log('Get oids snmpinfo success:' + snmpStr);
+        console.log('Get oids snmpinfo success.');
         callback(snmpStr);
       }
     });
@@ -104,6 +104,7 @@ function getPrometheusinfo (host, path, callback) {
     });
     res.on('end', function(){
       var data = Buffer.concat(chunks, size);
+      console.log('Get Prometheus monitoring info success.');
       callback(data.toString());
     });
   }).on('error', function(e) {
@@ -149,7 +150,6 @@ app.get('/host_list', function (req, res) {
 */
 app.get('/snmp/:hostname', function (req, res) {
   var host = req.params.hostname;
-  console.log('snmphost:' + host);
   getSnmpinfo(host, community, function(snmpInfo) {
     res.send(snmpInfo);
   });
@@ -161,7 +161,6 @@ app.get('/snmp/:hostname', function (req, res) {
 */
 app.get('/prometheus_ceph/:hostname', function (req, res) {
   var host = req.params.hostname;
-  console.log('host:' + host);
   getPrometheusinfo(host, urlCeph_health, function(prometheusInfo) {
     res.send(prometheusInfo);
   });
@@ -173,7 +172,6 @@ app.get('/prometheus_ceph/:hostname', function (req, res) {
 */
 app.get('/prometheus_mem/:hostname', function (req, res) {
   var host = req.params.hostname;
-  console.log('host:' + host);
   getPrometheusinfo(host, urlNode_mem_free, function(prometheusInfo) {
     res.send(prometheusInfo);
   });
