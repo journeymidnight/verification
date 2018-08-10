@@ -20,9 +20,9 @@ var cephOsdDfTreeData = grid.set(4, 6, 4, 2, contrib.log, { label: "OSD Tree" })
 
 var snmpInfo = grid.set(4, 8, 4, 4, contrib.log, { fg: "green", label: 'SNMP' });
 
-var demo4 = grid.set(8, 0, 4, 4, contrib.map, { label: 'Demo4' });
+var prometheus_ceph = grid.set(8, 0, 4, 4, contrib.log, { label: 'Prometheus Ceph' });
 
-var demo5 = grid.set(8, 4, 4, 4, contrib.map, { label: 'Demo5' });
+var nier = grid.set(8, 4, 4, 4, contrib.log, { label: 'Nier' });
 
 var demo6 = grid.set(8, 8, 4, 4, contrib.map, { label: 'Demo6' });
 
@@ -165,10 +165,53 @@ setInterval(function () {
 						snmpInfo.log(`request failed: ${response}`);
 					}
 				});
+
+				// 每个主机的ceph prometheus信息获取
+				request({
+					uri: 'http://10.70.161.10:30000/prometheus_ceph/' + hostname,
+					method: 'GET',
+				}, (err, response, body) => {
+					if (!err && response.statusCode === 200) {
+						var cephJson = JSON.parse(body);
+						// 每个主机的ceph memory prometheus信息获取
+						request({
+							uri: 'http://10.70.161.10:30000/prometheus_mem/' + hostname,
+							method: 'GET',
+						}, (err, response, body) => {
+							if (!err && response.statusCode === 200) {
+								var memJson = JSON.parse(body);
+								if (cephJson.status === 'success' && memJson.status === 'success') {
+									prometheus_ceph.log(hostname + ": " + 'success');
+								} else {
+									prometheus_ceph.log(hostname + ": " + 'fail');
+								}
+							} else {
+								prometheus_ceph.log(`request failed: ${response}`);
+							}
+						});
+					} else {
+						prometheus_ceph.log(`request failed: ${response}`);
+					}
+				});
+
+				request({
+					uri: 'http://10.70.161.10:30000/nier_token/' + hostname,
+					method: 'GET',
+				}, (err, response, body) => {
+					if (!err && response.statusCode === 200) {
+						var json = JSON.parse(body);
+						nier.log(hostname + ": " + json.Token);
+					} else {
+						nier.log(`request failed: ${response}`);
+					}
+				});
 			});
 		} else {
 			snmpInfo.log(`request failed: ${response}`);
 		}
+		snmpInfo.log("");
+		prometheus_ceph.log("");
+		nier.log("");
 		screen.render();
 	})
 }, 2000);
