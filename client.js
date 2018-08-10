@@ -1,30 +1,65 @@
 const request = require('request');
 const blessed = require('blessed');
 const contrib = require('blessed-contrib');
+const url = "http://10.70.161.10:30000";
 
 var screen = blessed.screen();
 
-var grid = new contrib.grid({ rows: 12, cols: 12, screen: screen });
+var grid = new contrib.grid({
+	rows: 12,
+	cols: 12,
+	screen: screen
+});
 
-var map = grid.set(0, 0, 4, 4, contrib.map, { label: 'World Map' });
+var map = grid.set(0, 0, 4, 4, contrib.map, {
+	label: 'World Map'
+});
 
-var box1 = grid.set(0, 4, 4, 4, blessed.box, { content: 'Ceph Status' });
+var box1 = grid.set(0, 4, 4, 4, blessed.box, {
+	content: 'Ceph Status'
+});
 
-var log = grid.set(0, 8, 4, 4, contrib.log, { fg: "red", label: 'server log' });
+var log = grid.set(0, 8, 4, 4, contrib.log, {
+	fg: "red",
+	label: 'server log'
+});
 
-var cephStatus = grid.set(4, 0, 4, 4, contrib.log, { fg: "green", label: 'Ceph Status' });
+var cephStatus = grid.set(4, 0, 4, 4, contrib.log, {
+	fg: "green",
+	label: 'Ceph Status'
+});
 
-var cephOsdDfTreeGraph = grid.set(4, 4, 4, 2, contrib.bar, { label: 'Ceph OSD Df Tree', barWidth: 8, barSpacing: 6, xOffset: 0, maxHeight: 30 });
+var cephOsdDfTreeGraph = grid.set(4, 4, 4, 2, contrib.bar, {
+	label: 'Ceph OSD Df Tree',
+	barWidth: 6,
+	barSpacing: 6,
+	xOffset: 0,
+	maxHeight: 30
+});
 
-var cephOsdDfTreeData = grid.set(4, 6, 4, 2, contrib.log, { label: "OSD Tree" });
+var cephOsdDfTreeData = grid.set(4, 6, 4, 2, contrib.log, {
+	fg: "green",
+	label: "OSD Tree"
+});
 
-var snmpInfo = grid.set(4, 8, 4, 4, contrib.log, { fg: "green", label: 'SNMP' });
+var snmpInfo = grid.set(4, 8, 4, 4, contrib.log, {
+	fg: "green",
+	label: 'SNMP'
+});
 
-var prometheus_ceph = grid.set(8, 0, 4, 4, contrib.log, { label: 'Prometheus Ceph' });
+var prometheus_ceph = grid.set(8, 0, 4, 4, contrib.log, {
+	fg: "green",
+	label: 'Prometheus Ceph'
+});
 
-var nier = grid.set(8, 4, 4, 4, contrib.log, { label: 'Nier' });
+var nier = grid.set(8, 4, 4, 4, contrib.log, {
+	fg: "green",
+	label: 'Nier'
+});
 
-var demo6 = grid.set(8, 8, 4, 4, contrib.map, { label: 'Demo6' });
+var demo6 = grid.set(8, 8, 4, 4, contrib.map, {
+	label: 'Demo6'
+});
 
 screen.render();
 
@@ -35,7 +70,7 @@ setTimeout(() => {
 }, 2000);
 
 request({
-	uri: 'http://10.70.161.10:30000/',
+	uri: url + '/',
 	method: 'GET',
 }, (err, response, body) => {
 	if (!err && response.statusCode === 200) {
@@ -49,7 +84,7 @@ request({
 
 setInterval(function () {
 	request({
-		uri: 'http://10.70.161.10:30000/ceph_status',
+		uri: url + '/ceph_status',
 		method: 'GET',
 	}, (err, response, body) => {
 		if (!err && response.statusCode === 200) {
@@ -63,33 +98,15 @@ setInterval(function () {
 				list.push(mon.addr)
 			});
 
-			list.push("num osds: " + json.osdmap.osdmap.num_osds
-				+ " num up: " + json.osdmap.osdmap.num_up_osds
-				+ " num in: " + json.osdmap.osdmap.num_in_osds);
+			list.push("num osds: " + json.osdmap.osdmap.num_osds +
+				" num up: " + json.osdmap.osdmap.num_up_osds +
+				" num in: " + json.osdmap.osdmap.num_in_osds);
 
-			var mapModules = json.mgrmap.modules;
-			var moduleNames = "modules: ";
-			mapModules.forEach(function (moduleName) {
-				moduleNames += moduleName + " ";
-			});
-			list.push(moduleNames);
-			list.push("available modules: ");
-			var availableModules = json.mgrmap.available_modules;
-			var availableModuleNames = "";
-			for (var i = 0; i < availableModules.length; i++) {
-				availableModuleNames += availableModules[i] + " ";
-				if (i % 3 === 2) {
-					list.push(availableModuleNames);
-					availableModuleNames = "";
-				}
-			}
-			if (availableModuleNames !== "") {
-				list.push(availableModuleNames);
-			}
+
+			cephStatus.logLines = [];
 			list.forEach(function (info) {
 				cephStatus.log(info);
 			});
-			cephStatus.log("");
 		} else {
 			cephStatus.log(`request failed: ${response}`);
 		}
@@ -99,7 +116,7 @@ setInterval(function () {
 
 setInterval(function () {
 	request({
-		uri: 'http://10.70.161.10:30000/ceph_osd_df_tree',
+		uri: url + '/ceph_osd_df_tree',
 		method: 'GET',
 	}, (err, response, body) => {
 		screen.append(cephOsdDfTreeGraph);
@@ -131,6 +148,7 @@ setInterval(function () {
 				titles: hostList,
 				data: hostOsdNum
 			});
+			cephOsdDfTreeData.logLines = [];
 			textData.forEach(function (data) {
 				cephOsdDfTreeData.log(data);
 			});
@@ -147,15 +165,18 @@ setInterval(function () {
 setInterval(function () {
 	// 获取主机名列表
 	request({
-		uri: 'http://10.70.161.10:30000/host_list',
+		uri: url + '/host_list',
 		method: 'GET',
 	}, (err, response, body) => {
 		if (!err && response.statusCode === 200) {
 			var json = JSON.parse(body);
+			snmpInfo.logLines = [];
+			prometheus_ceph.logLines = [];
+			nier.logLines = [];
 			json.forEach(function (hostname) {
 				// 每个主机的snmp信息单独获取
 				request({
-					uri: 'http://10.70.161.10:30000/snmp/' + hostname,
+					uri: url + '/snmp/' + hostname,
 					method: 'GET',
 				}, (err, response, body) => {
 					if (!err && response.statusCode === 200) {
@@ -168,14 +189,14 @@ setInterval(function () {
 
 				// 每个主机的ceph prometheus信息获取
 				request({
-					uri: 'http://10.70.161.10:30000/prometheus_ceph/' + hostname,
+					uri: url + '/prometheus_ceph/' + hostname,
 					method: 'GET',
 				}, (err, response, body) => {
 					if (!err && response.statusCode === 200) {
 						var cephJson = JSON.parse(body);
 						// 每个主机的ceph memory prometheus信息获取
 						request({
-							uri: 'http://10.70.161.10:30000/prometheus_mem/' + hostname,
+							uri: url + '/prometheus_mem/' + hostname,
 							method: 'GET',
 						}, (err, response, body) => {
 							if (!err && response.statusCode === 200) {
@@ -184,6 +205,8 @@ setInterval(function () {
 									prometheus_ceph.log(hostname + ": " + 'success');
 								} else {
 									prometheus_ceph.log(hostname + ": " + 'fail');
+									prometheus_ceph.log("ceph status: " + cephJson.status);
+									prometheus_ceph.log("ceph mem status: " + memJson.status);
 								}
 							} else {
 								prometheus_ceph.log(`request failed: ${response}`);
@@ -194,8 +217,9 @@ setInterval(function () {
 					}
 				});
 
+				// 提取nier token
 				request({
-					uri: 'http://10.70.161.10:30000/nier_token/' + hostname,
+					uri: url + '/nier_token/' + hostname,
 					method: 'GET',
 				}, (err, response, body) => {
 					if (!err && response.statusCode === 200) {
@@ -209,9 +233,6 @@ setInterval(function () {
 		} else {
 			snmpInfo.log(`request failed: ${response}`);
 		}
-		snmpInfo.log("");
-		prometheus_ceph.log("");
-		nier.log("");
 		screen.render();
 	})
 }, 2000);
