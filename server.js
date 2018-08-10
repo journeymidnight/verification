@@ -13,12 +13,20 @@ var cmdCeph_status = 'ceph status --format json-pretty';
 var community = 'public';
 
 /*
-   urls to get info from prometheus api 
-   makesure prometheus is working
+   urls to get info from Prometheus api 
+   makesure Prometheus is working
 */
 var urlCeph_health = '/api/v1/query\?query\=ceph_health_status';
 var urlNode_mem_free = '/api/v1/query\?query\=node_memory_MemFree';
 var prometheus_port = '9090';
+
+/*
+   options to get info from Nier api 
+   makesure Nier is working
+*/
+var urlPath_nier_login = '/api/v1/user/login';
+var nier_port = '8080';
+
 
 /*
   describe: Get CEPH info by executing commands on the operating system.
@@ -28,7 +36,7 @@ var prometheus_port = '9090';
 function getCephinfo (cmdStr,callback) {
   exec(cmdStr,function(err,stdout,stderr){
     if(err){
-      console.log('Execute ceph cmd err:' + stderr + ', cmd:' + cmdStr);
+      console.log('Execute ceph cmd failed:' + stderr + ', cmd:' + cmdStr);
     }
     else{
       console.log('Execute ceph cmd success:' + cmdStr);
@@ -70,7 +78,7 @@ function getSnmpinfo (host, community, callback) {
   oids.forEach(function(oid) {
     session.get({ oid: oid}, function(err, varbinds) {
       if(err) {
-        console.log('Get SNMP info error:' + err);
+        console.log('Get SNMP info failed:' + err + ' oid:' + oid);
       }
       else {
         varbinds.forEach(function(vb) {
@@ -94,7 +102,7 @@ function getSnmpinfo (host, community, callback) {
 */
 function getPrometheusinfo (host, path, callback) {
   var URL = 'http://' + host + ':' + prometheus_port + path;
-  //console.log('URL:' + URL);
+  console.log('URL:' + URL);
   http.get(URL, function(res) {
     var size = 0;
     var chunks = [];
@@ -108,10 +116,47 @@ function getPrometheusinfo (host, path, callback) {
       callback(data.toString());
     });
   }).on('error', function(e) {
-      console.log("Got error: " + e.message);
+      console.log("Get Prometheus monitoring failed." + e.message + ' host:' + host);
     });
 }
 
+/*
+  descirbe: Verify that the Nier service on the specified host is normal by getting token
+  input: host(node)_name, nier_login_path
+  output: nier token
+*/
+function getNiertoken (host, path, callback) {
+  var URL = 'http://' + host + ':' + nier_port + path;
+
+  //default username password,if changed ,asks chenji.
+  var postData = {
+    "name":"admin",
+    "password":"admin"   
+  };
+
+  var options = {
+    hostname: host,  
+    port: nier_port,  
+    path: path,  
+    method: 'POST',  
+    headers: {  
+        'Content-Type': 'application/json'  
+    } 
+  };
+  var req = http.request(options, function (res) {  
+    res.on('data', function (chunk) {  
+        console.log('Get Nier token success. host:' + host);
+        callback(chunk);
+    });  
+  });  
+  
+  req.on('error', function (e) {  
+    console.log('Get Nier token failed.: ' + e.message + ' host:' + host);  
+  });  
+
+  req.write(JSON.stringify(postData));  
+  req.end(); 
+}
 
 /*
   descirbe: The following is to accept the HTTP request section
@@ -125,8 +170,8 @@ app.get('/ceph_osd_df_tree', function (req, res) {
 });
 
 /*
-get ceph_status
-example: http://ip:port/status
+  get ceph_status
+  example: http://ip:port/status
 */
 app.get('/ceph_status', function (req, res) {
   getCephinfo(cmdCeph_status,function(ceph_status){
@@ -177,6 +222,16 @@ app.get('/prometheus_mem/:hostname', function (req, res) {
   });
 });
 
+/*
+  Getting the Nier token information of the specified host
+  example: http://ip:port/nier_token/hostname
+*/
+app.get('/nier_token/:hostname', function (req, res) {
+  var host = req.params.hostname;
+  getNiertoken(host, urlPath_nier_login, function(nierToken) {
+    res.send(nierToken);
+  });
+});
 
 var server = app.listen(30000, function () {
   var host = server.address().address;
