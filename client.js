@@ -1,7 +1,8 @@
 const request = require('request');
 const blessed = require('blessed');
 const contrib = require('blessed-contrib');
-const url = "http://10.70.160.138:30000";
+const ip = "10.70.160.138"
+const url = "http://" + ip + ":30000";
 const interval = 5000;
 
 var screen = blessed.screen();
@@ -45,30 +46,48 @@ var snmpInfo = grid.set(8, 0, 4, 6, contrib.log, {
 	label: 'SNMP'
 });
 
-var log = grid.set(8, 6, 4, 6, contrib.log, {
-	fg: "red",
-	label: 'server log'
+var prompt = grid.set(8, 6, 4, 6, blessed.prompt, {
+	border: 'line',
+	height: 'shrink',
+	width: 'half',
+	top: 'center',
+	left: 'center',
+	label: ' {blue-fg}Prompt{/blue-fg} ',
+	tags: true,
+	keys: true,
+	vi: true
 });
 
 screen.render();
 
-setTimeout(() => {
-	log.log("good happend");
-	setTimeout(() => log.log("bad happend"), 2000);
-}, 2000);
-
-request({
-	uri: url + '/',
-	method: 'GET',
-}, (err, response, body) => {
-	if (!err && response.statusCode === 200) {
-		log.log(`request is ok`);
-		box1.content = body;
-		screen.render();
-	} else {
-		log.log(`request failed: ${response}`);
+// check samba
+prompt.input("Input the vip.", function (err, vip) {
+	if (!err) {
+		prompt.input("Input the view name.", function (err, view) {
+			if (!err) {
+				var mount = grid.set(8, 6, 4, 6, contrib.log, {
+					fg: "green",
+					label: 'SMB'
+				});
+				setInterval(function () {
+					request({
+						uri: url + '/smb_folder/' + vip + '/' + view,
+						method: 'GET',
+					}, (err, response, body) => {
+						mount.logLines = [];
+						if (!err && response.statusCode === 200) {
+							mount.log(body);
+						} else {
+							mount.log(`request failed: ${response}`);
+						}
+						screen.render();
+					})
+				}, interval);
+			}
+		});
 	}
 });
+
 
 setInterval(function () {
 	request({
