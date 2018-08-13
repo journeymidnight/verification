@@ -1,7 +1,8 @@
 const request = require('request');
 const blessed = require('blessed');
 const contrib = require('blessed-contrib');
-const url = "http://10.70.161.10:30000";
+const url = "http://10.70.160.138:30000";
+const interval = 5000;
 
 var screen = blessed.screen();
 
@@ -11,25 +12,12 @@ var grid = new contrib.grid({
 	screen: screen
 });
 
-var map = grid.set(0, 0, 4, 4, contrib.map, {
-	label: 'World Map'
-});
-
-var box1 = grid.set(0, 4, 4, 4, blessed.box, {
-	content: 'Ceph Status'
-});
-
-var log = grid.set(0, 8, 4, 4, contrib.log, {
-	fg: "red",
-	label: 'server log'
-});
-
-var cephStatus = grid.set(4, 0, 4, 4, contrib.log, {
+var cephStatus = grid.set(0, 0, 4, 6, contrib.log, {
 	fg: "green",
 	label: 'Ceph Status'
 });
 
-var cephOsdDfTreeGraph = grid.set(4, 4, 4, 2, contrib.bar, {
+var cephOsdDfTreeGraph = grid.set(0, 6, 4, 3, contrib.bar, {
 	label: 'Ceph OSD Df Tree',
 	barWidth: 6,
 	barSpacing: 6,
@@ -37,32 +25,32 @@ var cephOsdDfTreeGraph = grid.set(4, 4, 4, 2, contrib.bar, {
 	maxHeight: 30
 });
 
-var cephOsdDfTreeData = grid.set(4, 6, 4, 2, contrib.log, {
+var cephOsdDfTreeData = grid.set(0, 9, 4, 3, contrib.log, {
 	fg: "green",
 	label: "OSD Tree"
 });
 
-var snmpInfo = grid.set(4, 8, 4, 4, contrib.log, {
-	fg: "green",
-	label: 'SNMP'
-});
-
-var prometheus_ceph = grid.set(8, 0, 4, 4, contrib.log, {
+var prometheus_ceph = grid.set(4, 0, 4, 6, contrib.log, {
 	fg: "green",
 	label: 'Prometheus Ceph'
 });
 
-var nier = grid.set(8, 4, 4, 4, contrib.log, {
+var nier = grid.set(4, 6, 4, 6, contrib.log, {
 	fg: "green",
 	label: 'Nier'
 });
 
-var demo6 = grid.set(8, 8, 4, 4, contrib.map, {
-	label: 'Demo6'
+var snmpInfo = grid.set(8, 0, 4, 6, contrib.log, {
+	fg: "green",
+	label: 'SNMP'
+});
+
+var log = grid.set(8, 6, 4, 6, contrib.log, {
+	fg: "red",
+	label: 'server log'
 });
 
 screen.render();
-
 
 setTimeout(() => {
 	log.log("good happend");
@@ -90,7 +78,6 @@ setInterval(function () {
 		if (!err && response.statusCode === 200) {
 			var json = JSON.parse(body);
 			var list = [];
-			list.push((new Date()).toString());
 			list.push("status: " + json.health.status);
 
 			var mons = json.monmap.mons;
@@ -112,7 +99,7 @@ setInterval(function () {
 		}
 		screen.render();
 	})
-}, 2000);
+}, interval);
 
 setInterval(function () {
 	request({
@@ -160,7 +147,7 @@ setInterval(function () {
 		}
 		screen.render();
 	})
-}, 2000);
+}, interval);
 
 setInterval(function () {
 	// 获取主机名列表
@@ -235,4 +222,4 @@ setInterval(function () {
 		}
 		screen.render();
 	})
-}, 2000);
+}, interval);
