@@ -27,7 +27,6 @@ var prometheus_port = '9090';
 var urlPath_nier_login = '/api/v1/user/login';
 var nier_port = '8080';
 
-
 /*
   describe: Get CEPH info by executing commands on the operating system.
   input: cmdStr. example:ceph status --format json-pretty
@@ -59,6 +58,42 @@ function getHost (cmdStr, callback) {
       console.log('Get host list success:' + cmdStr);
       var tmpList = JSON.parse(stdout);
       callback(tmpList.quorum_names);
+    }
+  });  
+}
+
+/*
+  describe: Test Samba service through smbclient connection
+  input: vip, view. example:virtual ip address,view name
+  output: samba connection details.
+*/
+function getSmbconnectinfo (vip, view, callback) {
+  var cmdSmbclient_conn_str = 'smbclient  -Ufsuser%fspassword //' + vip + '/' + view + ' -c showconnect';
+  exec(cmdSmbclient_conn_str,function(err,stdout,stderr){
+    if(err){
+      console.log('Get samba connection err:' + stderr + ', cmd:' + cmdSmbclient_conn_str);
+    }
+    else{
+      console.log('Get samba connection success:' + cmdSmbclient_conn_str);
+      callback(stdout);
+    }
+  });  
+}
+
+/*
+  describe: Get folder list through Samba service
+  input: vip, view. example:virtual ip address,view name
+  output: samba folder.
+*/
+function getSmbfolderinfo (vip, view, callback) {
+  var cmdSmbclient_ls_str = 'smbclient  -Ufsuser%fspassword //' + vip + '/' + view + ' -c ls';
+  exec(cmdSmbclient_ls_str,function(err,stdout,stderr){
+    if(err){
+      console.log('Get folder from samba err:' + stderr + ', cmd:' + cmdSmbclient_ls_str);
+    }
+    else{
+      console.log('Get folder from samba success:' + cmdSmbclient_ls_str);
+      callback(stdout);
     }
   });  
 }
@@ -131,7 +166,7 @@ function getNiertoken (host, path, callback) {
   //default username password,if changed ,asks chenji.
   var postData = {
     "name":"admin",
-    "password":"admin"   
+    "password":"admin"
   };
 
   var options = {
@@ -151,7 +186,7 @@ function getNiertoken (host, path, callback) {
   });  
   
   req.on('error', function (e) {  
-    console.log('Get Nier token failed.: ' + e.message + ' host:' + host);  
+    console.log('Get Nier token failed.: ' + e.message + ' host:' + host);
   });  
 
   req.write(JSON.stringify(postData));  
@@ -230,6 +265,30 @@ app.get('/nier_token/:hostname', function (req, res) {
   var host = req.params.hostname;
   getNiertoken(host, urlPath_nier_login, function(nierToken) {
     res.send(nierToken);
+  });
+});
+
+/*
+  Getting the samba connection information
+  example: http://ip:port/smb_connect/vip/view
+*/
+app.get('/smb_connect/:vip/:view', function (req, res) {
+  var vip = req.params.vip;
+  var view = req.params.view;
+  getSmbconnectinfo(vip, view, function(smbconnectinfo) {
+    res.send(smbconnectinfo);
+  });
+});
+
+/*
+  Get folder list through Samba service
+  example: http://ip:port/smb_folder/vip/view
+*/
+app.get('/smb_folder/:vip/:view', function (req, res) {
+  var vip = req.params.vip;
+  var view = req.params.view;
+  getSmbfolderinfo(vip, view, function(smbfolderinfo) {
+    res.send(smbfolderinfo);
   });
 });
 
