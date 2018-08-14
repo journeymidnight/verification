@@ -35,7 +35,8 @@ var nier_port = '8080';
 function getCephinfo (cmdStr,callback) {
   exec(cmdStr,function(err,stdout,stderr){
     if(err){
-      console.log('Execute ceph cmd failed:' + stderr + ', cmd:' + cmdStr);
+      console.log('Execute ceph cmd failed:' + err + ', cmd:' + cmdStr);
+      callback(err);
     }
     else{
       console.log('Execute ceph cmd success:' + cmdStr);
@@ -52,7 +53,8 @@ function getCephinfo (cmdStr,callback) {
 function getHost (cmdStr, callback) {
   exec(cmdStr,function(err,stdout,stderr){
     if(err){
-      console.log('Get host list err:' + stderr + ', cmd:' + cmdStr);
+      console.log('Get host list err:' + err + ', cmd:' + cmdStr);
+      callback(err);
     }
     else{
       console.log('Get host list success:' + cmdStr);
@@ -71,7 +73,8 @@ function getSmbconnectinfo (vip, view, callback) {
   var cmdSmbclient_conn_str = 'smbclient  -Ufsuser%fspassword //' + vip + '/' + view + ' -c showconnect';
   exec(cmdSmbclient_conn_str,function(err,stdout,stderr){
     if(err){
-      console.log('Get samba connection err:' + stderr + ', cmd:' + cmdSmbclient_conn_str);
+      console.log('Get samba connection err:' + err + ', cmd:' + cmdSmbclient_conn_str);
+      callback(err);
     }
     else{
       console.log('Get samba connection success:' + cmdSmbclient_conn_str);
@@ -89,7 +92,8 @@ function getSmbfolderinfo (vip, view, callback) {
   var cmdSmbclient_ls_str = 'smbclient  -Ufsuser%fspassword //' + vip + '/' + view + ' -c ls';
   exec(cmdSmbclient_ls_str,function(err,stdout,stderr){
     if(err){
-      console.log('Get folder from samba err:' + stderr + ', cmd:' + cmdSmbclient_ls_str);
+      console.log('Get folder from samba err:' + err + ', cmd:' + cmdSmbclient_ls_str);
+      callback(err);
     }
     else{
       console.log('Get folder from samba success:' + cmdSmbclient_ls_str);
@@ -105,22 +109,28 @@ function getSmbfolderinfo (vip, view, callback) {
   ps: By adding OID to oids array, you can get more data.
 */
 function getSnmpinfo (host, community, callback) {
+  var err_status = false;
   var session = new snmp.Session({ 
     host: host, 
     community: community });
+
+  //Add the OIDs you need in the following array.
   var oids = [[1,3,6,1,4,1,51052,1,1,0],[1,3,6,1,4,1,51052,1,2,0]];
+
   var snmpStr = '';
   oids.forEach(function(oid) {
     session.get({ oid: oid}, function(err, varbinds) {
-      if(err) {
+      if(err && err_status == false) {
         console.log('Get SNMP info failed:' + err + ' oid:' + oid);
+        callback(err);
+        err_status = true;
       }
-      else {
+      if(!err) {
         varbinds.forEach(function(vb) {
           snmpStr = snmpStr + vb.oid + '=' + vb.value + '(' + vb.type + ')';
         });
       }
-      if(--oids.length == 0) {
+      if(--oids.length == 0 && err_status == false) {
         session.close();
         console.log('Get oids snmpinfo success. host:' + host);
         callback(snmpStr);
