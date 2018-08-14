@@ -1,8 +1,7 @@
 const request = require('request');
 const blessed = require('blessed');
 const contrib = require('blessed-contrib');
-const ip = "10.70.160.138"
-const url = "http://" + ip + ":30000";
+const url = "http://10.70.160.138:30000";
 const interval = 5000;
 
 var screen = blessed.screen();
@@ -14,6 +13,7 @@ var grid = new contrib.grid({
 });
 
 var cephStatus = grid.set(0, 0, 4, 6, contrib.log, {
+	align: "center",
 	fg: "green",
 	label: 'Ceph Status'
 });
@@ -27,26 +27,31 @@ var cephOsdDfTreeGraph = grid.set(0, 6, 4, 3, contrib.bar, {
 });
 
 var cephOsdDfTreeData = grid.set(0, 9, 4, 3, contrib.log, {
+	align: "center",
 	fg: "green",
 	label: "OSD Tree"
 });
 
 var prometheus_ceph = grid.set(4, 0, 4, 6, contrib.log, {
+	align: "center",
 	fg: "green",
 	label: 'Prometheus Ceph'
 });
 
 var nier = grid.set(4, 6, 4, 6, contrib.log, {
+	align: "center",
 	fg: "green",
 	label: 'Nier'
 });
 
 var snmpInfo = grid.set(8, 0, 4, 6, contrib.log, {
+	align: "center",
 	fg: "green",
 	label: 'SNMP'
 });
 
 var prompt = grid.set(8, 6, 4, 6, blessed.prompt, {
+	align: "center",
 	border: 'line',
 	height: 'shrink',
 	width: 'half',
@@ -59,35 +64,6 @@ var prompt = grid.set(8, 6, 4, 6, blessed.prompt, {
 });
 
 screen.render();
-
-// check samba
-prompt.input("Input the vip.", function (err, vip) {
-	if (!err) {
-		prompt.input("Input the view name.", function (err, view) {
-			if (!err) {
-				var mount = grid.set(8, 6, 4, 6, contrib.log, {
-					fg: "green",
-					label: 'SMB'
-				});
-				setInterval(function () {
-					request({
-						uri: url + '/smb_folder/' + vip + '/' + view,
-						method: 'GET',
-					}, (err, response, body) => {
-						mount.logLines = [];
-						if (!err && response.statusCode === 200) {
-							mount.log(body);
-						} else {
-							mount.log(`request failed: ${response}`);
-						}
-						screen.render();
-					})
-				}, interval);
-			}
-		});
-	}
-});
-
 
 setInterval(function () {
 	request({
@@ -242,3 +218,31 @@ setInterval(function () {
 		screen.render();
 	})
 }, interval);
+
+// 检查samba是否能有效连接
+prompt.input("Input the vip.", function (err, vip) {
+	if (!err) {
+		prompt.input("Input the view name.", function (err, view) {
+			if (!err) {
+				var mount = grid.set(8, 6, 4, 6, contrib.log, {
+					fg: "green",
+					label: 'SMB'
+				});
+				setInterval(function () {
+					request({
+						uri: url + '/smb_folder/' + vip + '/' + view,
+						method: 'GET',
+					}, (err, response, body) => {
+						mount.logLines = [];
+						if (!err && response.statusCode === 200) {
+							mount.log(body);
+						} else {
+							mount.log(`request failed: ${response}`);
+						}
+						screen.render();
+					})
+				}, interval);
+			}
+		});
+	}
+});
