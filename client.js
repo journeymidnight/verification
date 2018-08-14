@@ -44,7 +44,7 @@ var cephOsdDfTreeData = grid.set(0, 9, 4, 3, contrib.log, {
 	label: "OSD Tree"
 });
 
-var prometheus_ceph = grid.set(4, 0, 4, 6, contrib.log, {
+var prometheusCeph = grid.set(4, 0, 4, 6, contrib.log, {
 	align: "center",
 	fg: "green",
 	label: 'Prometheus Ceph'
@@ -69,7 +69,8 @@ var prompt = grid.set(8, 6, 4, 6, blessed.prompt, {
 	width: 'half',
 	top: 'center',
 	left: 'center',
-	label: ' {blue-fg}Prompt{/blue-fg} ',
+	fg: "green",
+	label: ' {green-fg}Prompt{/green-fg} ',
 	tags: true,
 	keys: true,
 	vi: true
@@ -165,7 +166,7 @@ setInterval(function () {
 		if (!err && response.statusCode === 200) {
 			var json = JSON.parse(body);
 			snmpInfo.logLines = [];
-			prometheus_ceph.logLines = [];
+			prometheusCeph.logLines = [];
 			nier.logLines = [];
 			json.forEach(function (hostname) {
 				// 每个主机的snmp信息单独获取
@@ -196,18 +197,18 @@ setInterval(function () {
 							if (!err && response.statusCode === 200) {
 								var memJson = JSON.parse(body);
 								if (cephJson.status === 'success' && memJson.status === 'success') {
-									prometheus_ceph.log(hostname + ": " + 'success');
+									prometheusCeph.log(hostname + ": " + 'success');
 								} else {
-									prometheus_ceph.log(hostname + ": " + 'fail');
-									prometheus_ceph.log("ceph status: " + cephJson.status);
-									prometheus_ceph.log("ceph mem status: " + memJson.status);
+									prometheusCeph.log(hostname + ": " + 'fail');
+									prometheusCeph.log("ceph status: " + cephJson.status);
+									prometheusCeph.log("ceph memory status: " + memJson.status);
 								}
 							} else {
-								prometheus_ceph.log(`request failed: ${response}`);
+								prometheusCeph.log(`request failed: ${response}`);
 							}
 						});
 					} else {
-						prometheus_ceph.log(`request failed: ${response}`);
+						prometheusCeph.log(`request failed: ${response}`);
 					}
 				});
 
@@ -237,6 +238,7 @@ prompt.input("Input the vip.", function (err, vip) {
 		prompt.input("Input the view name.", function (err, view) {
 			if (!err) {
 				var mount = grid.set(8, 6, 4, 6, contrib.log, {
+					align: "center",
 					fg: "green",
 					label: 'Samba'
 				});
@@ -246,6 +248,7 @@ prompt.input("Input the vip.", function (err, vip) {
 						method: 'GET',
 					}, (err, response, body) => {
 						mount.logLines = [];
+						mount.log('smb://' + vip + '/' + view);
 						if (!err && response.statusCode === 200) {
 							body.split(/[\r\n]/).forEach(function (file) {
 								mount.log(file);
