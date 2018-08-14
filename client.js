@@ -6,12 +6,12 @@ const interval = 5000;
 
 var screen = blessed.screen();
 let exit = () => {
-	  process.exit();
+	process.exit();
 };
 
 screen.key(['escape', 'q', 'C-c'], () => {
-	  screen.destroy();
-	    exit();
+	screen.destroy();
+	exit();
 });
 
 process.on('SIGINT', exit);
@@ -238,7 +238,7 @@ prompt.input("Input the vip.", function (err, vip) {
 			if (!err) {
 				var mount = grid.set(8, 6, 4, 6, contrib.log, {
 					fg: "green",
-					label: 'SMB'
+					label: 'Samba'
 				});
 				setInterval(function () {
 					request({
@@ -247,7 +247,9 @@ prompt.input("Input the vip.", function (err, vip) {
 					}, (err, response, body) => {
 						mount.logLines = [];
 						if (!err && response.statusCode === 200) {
-							mount.log(body);
+							body.split(/[\r\n]/).forEach(function (file) {
+								mount.log(file);
+							});
 						} else {
 							mount.log(`request failed: ${response}`);
 						}
