@@ -5,6 +5,18 @@ const url = "http://10.70.160.138:30000";
 const interval = 5000;
 
 var screen = blessed.screen();
+let exit = () => {
+	  process.exit();
+};
+
+screen.key(['escape', 'q', 'C-c'], () => {
+	  screen.destroy();
+	    exit();
+});
+
+process.on('SIGINT', exit);
+
+process.on('SIGTERM', exit);
 
 var grid = new contrib.grid({
 	rows: 12,
