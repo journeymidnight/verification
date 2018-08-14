@@ -5,6 +5,18 @@ const url = "http://10.70.160.138:30000";
 const interval = 5000;
 
 var screen = blessed.screen();
+let exit = () => {
+	process.exit();
+};
+
+screen.key(['escape', 'q', 'C-c'], () => {
+	screen.destroy();
+	exit();
+});
+
+process.on('SIGINT', exit);
+
+process.on('SIGTERM', exit);
 
 var grid = new contrib.grid({
 	rows: 12,
@@ -13,6 +25,7 @@ var grid = new contrib.grid({
 });
 
 var cephStatus = grid.set(0, 0, 4, 6, contrib.log, {
+	align: "center",
 	fg: "green",
 	label: 'Ceph Status'
 });
@@ -26,49 +39,44 @@ var cephOsdDfTreeGraph = grid.set(0, 6, 4, 3, contrib.bar, {
 });
 
 var cephOsdDfTreeData = grid.set(0, 9, 4, 3, contrib.log, {
+	align: "center",
 	fg: "green",
 	label: "OSD Tree"
 });
 
-var prometheus_ceph = grid.set(4, 0, 4, 6, contrib.log, {
+var prometheusCeph = grid.set(4, 0, 4, 6, contrib.log, {
+	align: "center",
 	fg: "green",
 	label: 'Prometheus Ceph'
 });
 
 var nier = grid.set(4, 6, 4, 6, contrib.log, {
+	align: "center",
 	fg: "green",
 	label: 'Nier'
 });
 
 var snmpInfo = grid.set(8, 0, 4, 6, contrib.log, {
+	align: "center",
 	fg: "green",
 	label: 'SNMP'
 });
 
-var log = grid.set(8, 6, 4, 6, contrib.log, {
-	fg: "red",
-	label: 'server log'
+var prompt = grid.set(8, 6, 4, 6, blessed.prompt, {
+	align: "center",
+	border: 'line',
+	height: 'shrink',
+	width: 'half',
+	top: 'center',
+	left: 'center',
+	fg: "green",
+	label: ' {green-fg}Prompt{/green-fg} ',
+	tags: true,
+	keys: true,
+	vi: true
 });
 
 screen.render();
-
-setTimeout(() => {
-	log.log("good happend");
-	setTimeout(() => log.log("bad happend"), 2000);
-}, 2000);
-
-request({
-	uri: url + '/',
-	method: 'GET',
-}, (err, response, body) => {
-	if (!err && response.statusCode === 200) {
-		log.log(`request is ok`);
-		box1.content = body;
-		screen.render();
-	} else {
-		log.log(`request failed: ${response}`);
-	}
-});
 
 setInterval(function () {
 	request({
@@ -158,7 +166,7 @@ setInterval(function () {
 		if (!err && response.statusCode === 200) {
 			var json = JSON.parse(body);
 			snmpInfo.logLines = [];
-			prometheus_ceph.logLines = [];
+			prometheusCeph.logLines = [];
 			nier.logLines = [];
 			json.forEach(function (hostname) {
 				// 每个主机的snmp信息单独获取
@@ -189,18 +197,18 @@ setInterval(function () {
 							if (!err && response.statusCode === 200) {
 								var memJson = JSON.parse(body);
 								if (cephJson.status === 'success' && memJson.status === 'success') {
-									prometheus_ceph.log(hostname + ": " + 'success');
+									prometheusCeph.log(hostname + ": " + 'success');
 								} else {
-									prometheus_ceph.log(hostname + ": " + 'fail');
-									prometheus_ceph.log("ceph status: " + cephJson.status);
-									prometheus_ceph.log("ceph mem status: " + memJson.status);
+									prometheusCeph.log(hostname + ": " + 'fail');
+									prometheusCeph.log("ceph status: " + cephJson.status);
+									prometheusCeph.log("ceph memory status: " + memJson.status);
 								}
 							} else {
-								prometheus_ceph.log(`request failed: ${response}`);
+								prometheusCeph.log(`request failed: ${response}`);
 							}
 						});
 					} else {
-						prometheus_ceph.log(`request failed: ${response}`);
+						prometheusCeph.log(`request failed: ${response}`);
 					}
 				});
 
@@ -223,3 +231,35 @@ setInterval(function () {
 		screen.render();
 	})
 }, interval);
+
+// 检查samba是否能有效连接
+prompt.input("Input the vip.", function (err, vip) {
+	if (!err) {
+		prompt.input("Input the view name.", function (err, view) {
+			if (!err) {
+				var mount = grid.set(8, 6, 4, 6, contrib.log, {
+					align: "center",
+					fg: "green",
+					label: 'Samba'
+				});
+				setInterval(function () {
+					request({
+						uri: url + '/smb_folder/' + vip + '/' + view,
+						method: 'GET',
+					}, (err, response, body) => {
+						mount.logLines = [];
+						mount.log('smb://' + vip + '/' + view);
+						if (!err && response.statusCode === 200) {
+							body.split(/[\r\n]/).forEach(function (file) {
+								mount.log(file);
+							});
+						} else {
+							mount.log(`request failed: ${response}`);
+						}
+						screen.render();
+					})
+				}, interval);
+			}
+		});
+	}
+});
