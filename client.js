@@ -1,8 +1,7 @@
 const request = require('request');
 const blessed = require('blessed');
 const contrib = require('blessed-contrib');
-const url = "http://10.70.160.59:30000";
-// const url = "http://10.70.161.10:30000";
+const url = "http://127.0.0.1:30000";
 const interval = 5000;
 
 var screen = blessed.screen();
