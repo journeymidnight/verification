@@ -176,7 +176,12 @@ setInterval(function () {
 				}, (err, response, body) => {
 					if (!err && response.statusCode === 200) {
 						snmpInfo.log(hostname);
-						snmpInfo.log(body);
+						var contents = body.replace(/1,3,6,1,4,1,51052/g, "\n" + "1,3,6,1,4,1,51052").split(/[\n]/g);
+						contents.forEach(function (content) {
+							if(content !== "") {
+								snmpInfo.log(content);
+							}
+						});
 					} else {
 						snmpInfo.log(`request failed: ${response}`);
 					}
