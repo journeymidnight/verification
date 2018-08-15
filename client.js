@@ -1,7 +1,8 @@
 const request = require('request');
 const blessed = require('blessed');
 const contrib = require('blessed-contrib');
-const url = "http://10.70.160.138:30000";
+const url = "http://10.70.160.59:30000";
+// const url = "http://10.70.161.10:30000";
 const interval = 5000;
 
 var screen = blessed.screen();
@@ -81,7 +82,7 @@ screen.render();
 setInterval(function () {
 	request({
 		uri: url + '/ceph_status',
-		method: 'GET',
+		method: 'GET'
 	}, (err, response, body) => {
 		if (!err && response.statusCode === 200) {
 			var json = JSON.parse(body);
@@ -97,12 +98,12 @@ setInterval(function () {
 				" num up: " + json.osdmap.osdmap.num_up_osds +
 				" num in: " + json.osdmap.osdmap.num_in_osds);
 
-
 			cephStatus.logLines = [];
 			list.forEach(function (info) {
 				cephStatus.log(info);
 			});
 		} else {
+			cephStatus.logLines = [];
 			cephStatus.log(`request failed: ${response}`);
 		}
 		screen.render();
@@ -112,7 +113,7 @@ setInterval(function () {
 setInterval(function () {
 	request({
 		uri: url + '/ceph_osd_df_tree',
-		method: 'GET',
+		method: 'GET'
 	}, (err, response, body) => {
 		screen.append(cephOsdDfTreeGraph);
 		if (!err && response.statusCode === 200) {
@@ -158,10 +159,10 @@ setInterval(function () {
 }, interval);
 
 setInterval(function () {
-	// 获取主机名列表
+	// get hostname list
 	request({
 		uri: url + '/host_list',
-		method: 'GET',
+		method: 'GET'
 	}, (err, response, body) => {
 		if (!err && response.statusCode === 200) {
 			var json = JSON.parse(body);
@@ -169,10 +170,10 @@ setInterval(function () {
 			prometheusCeph.logLines = [];
 			nier.logLines = [];
 			json.forEach(function (hostname) {
-				// 每个主机的snmp信息单独获取
+				// get every host's snmp info.
 				request({
 					uri: url + '/snmp/' + hostname,
-					method: 'GET',
+					method: 'GET'
 				}, (err, response, body) => {
 					if (!err && response.statusCode === 200) {
 						snmpInfo.log(hostname);
@@ -182,17 +183,17 @@ setInterval(function () {
 					}
 				});
 
-				// 每个主机的ceph prometheus信息获取
+				// every host's ceph prometheus info
 				request({
 					uri: url + '/prometheus_ceph/' + hostname,
-					method: 'GET',
+					method: 'GET'
 				}, (err, response, body) => {
 					if (!err && response.statusCode === 200) {
 						var cephJson = JSON.parse(body);
-						// 每个主机的ceph memory prometheus信息获取
+						// get every host's memory prometheus info
 						request({
 							uri: url + '/prometheus_mem/' + hostname,
-							method: 'GET',
+							method: 'GET'
 						}, (err, response, body) => {
 							if (!err && response.statusCode === 200) {
 								var memJson = JSON.parse(body);
@@ -212,10 +213,10 @@ setInterval(function () {
 					}
 				});
 
-				// 提取nier token
+				// get every host's nier token
 				request({
 					uri: url + '/nier_token/' + hostname,
-					method: 'GET',
+					method: 'GET'
 				}, (err, response, body) => {
 					if (!err && response.statusCode === 200) {
 						var json = JSON.parse(body);
@@ -226,17 +227,19 @@ setInterval(function () {
 				});
 			});
 		} else {
+			snmpInfo.logLines = [];
 			snmpInfo.log(`request failed: ${response}`);
 		}
 		screen.render();
 	})
 }, interval);
 
-// 检查samba是否能有效连接
+// check samba connection
 prompt.input("Input the vip.", function (err, vip) {
 	if (!err) {
 		prompt.input("Input the view name.", function (err, view) {
 			if (!err) {
+				// replace the prompt
 				var mount = grid.set(8, 6, 4, 6, contrib.log, {
 					align: "center",
 					fg: "green",
@@ -245,7 +248,7 @@ prompt.input("Input the vip.", function (err, vip) {
 				setInterval(function () {
 					request({
 						uri: url + '/smb_folder/' + vip + '/' + view,
-						method: 'GET',
+						method: 'GET'
 					}, (err, response, body) => {
 						mount.logLines = [];
 						mount.log('smb://' + vip + '/' + view);
