@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 const request = require('request');
 const blessed = require('blessed');
 const contrib = require('blessed-contrib');
@@ -75,8 +76,6 @@ var prompt = grid.set(8, 6, 4, 6, blessed.prompt, {
 	keys: true,
 	vi: true
 });
-
-screen.render();
 
 function cephStatusVerification() {
 	request({
@@ -157,7 +156,7 @@ function cephOsdTreeVerification() {
 	})
 }
 
-function hostsWalk() {
+function hostsWalkVerification() {
 	// get hostname list
 	request({
 		uri: url + '/host_list',
@@ -236,15 +235,14 @@ function hostsWalk() {
 		}
 		screen.render();
 	})
-
 }
 
 cephStatusVerification();
 cephOsdTreeVerification();
-hostsWalk();
+hostsWalkVerification();
 setInterval(cephStatusVerification, interval);
 setInterval(cephOsdTreeVerification, interval);
-setInterval(hostsWalk, interval);
+setInterval(hostsWalkVerification, interval);
 
 // check samba connection
 prompt.input("Input the vip.", function (err, vip) {
