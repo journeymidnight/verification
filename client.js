@@ -78,7 +78,7 @@ var prompt = grid.set(8, 6, 4, 6, blessed.prompt, {
 
 screen.render();
 
-setInterval(function () {
+function cephStatusVerification() {
 	request({
 		uri: url + '/ceph_status',
 		method: 'GET'
@@ -107,9 +107,9 @@ setInterval(function () {
 		}
 		screen.render();
 	})
-}, interval);
+}
 
-setInterval(function () {
+function cephOsdTreeVerification() {
 	request({
 		uri: url + '/ceph_osd_df_tree',
 		method: 'GET'
@@ -155,9 +155,9 @@ setInterval(function () {
 		}
 		screen.render();
 	})
-}, interval);
+}
 
-setInterval(function () {
+function hostsWalk() {
 	// get hostname list
 	request({
 		uri: url + '/host_list',
@@ -178,7 +178,7 @@ setInterval(function () {
 						snmpInfo.log(hostname);
 						var contents = body.replace(/1,3,6,1,4,1,51052/g, "\n" + "1,3,6,1,4,1,51052").split(/[\n]/g);
 						contents.forEach(function (content) {
-							if(content !== "") {
+							if (content !== "") {
 								snmpInfo.log(content);
 							}
 						});
@@ -236,7 +236,15 @@ setInterval(function () {
 		}
 		screen.render();
 	})
-}, interval);
+
+}
+
+cephStatusVerification();
+cephOsdTreeVerification();
+hostsWalk();
+setInterval(cephStatusVerification, interval);
+setInterval(cephOsdTreeVerification, interval);
+setInterval(hostsWalk, interval);
 
 // check samba connection
 prompt.input("Input the vip.", function (err, vip) {
@@ -249,7 +257,8 @@ prompt.input("Input the vip.", function (err, vip) {
 					fg: "green",
 					label: 'Samba'
 				});
-				setInterval(function () {
+
+				function sambaVerification() {
 					request({
 						uri: url + '/smb_folder/' + vip + '/' + view,
 						method: 'GET'
@@ -265,7 +274,9 @@ prompt.input("Input the vip.", function (err, vip) {
 						}
 						screen.render();
 					})
-				}, interval);
+				}
+				sambaVerification();
+				setInterval(sambaVerification, interval);
 			}
 		});
 	}
