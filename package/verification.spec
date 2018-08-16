@@ -34,6 +34,7 @@ cp -r *   %{buildroot}/binaries/verification/
 %post
 systemctl start verification
 chkconfig verification on
+if [ ! -d /root/.snmp/mibs ] ; then mkdir -p /root/.snmp/mibs ; done
 curl -o /root/.snmp/mibs/JMD-STORAGE-MID.txt http://localhost:8083/JMD-STORAGE-MID.txt
 
 %preun
