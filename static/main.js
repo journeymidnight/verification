@@ -23,7 +23,7 @@ checkBtn.addEventListener("click", function () {
 
 function httpGetAsync(url, callback) {
     var xmlHttp = new XMLHttpRequest();
-    xmlHttp.onreadystatechange = function() { 
+    xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
             callback(xmlHttp.responseText);
         }
@@ -32,10 +32,15 @@ function httpGetAsync(url, callback) {
     xmlHttp.send(null);
 }
 
-httpGetAsync("/ceph_status", function(response) {
+httpGetAsync("/ceph_status", function (response) {
     var json = JSON.parse(response);
     var info = "status:" + json.health.status + "\n";
-    info = info + json.osdmap.osdmap.num_osds + "\n";
-
+    var mons = json.monmap.mons;
+    mons.forEach(function (mon) {
+        info += info + mon.addr + "\n";
+    });
+    info = info + "num osds: " + json.osdmap.osdmap.num_osds +
+        " num up: " + json.osdmap.osdmap.num_up_osds +
+        " num in: " + json.osdmap.osdmap.num_in_osds + "\n";
     document.getElementById("ceph-status").textContent = info;
 })
