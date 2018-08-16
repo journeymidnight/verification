@@ -22,14 +22,18 @@ BuildRoot:	%(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
 %build
 
 %install
+mkdir -p %{buildroot}/root/.snmp/mibs
+mkdir -p %{buildroot}/usr/lib/systemd/system
 mkdir -p  %{buildroot}/binaries/verification
-mv verification.service %{buildroot}/etc/systemd/system/multi-user.target.wants/verification.service
+mv package/verification.service %{buildroot}/usr/lib/systemd/system
+mv JMD-STORAGE-MIB.txt %{buildroot}/root/.snmp/mibs
 cp -r *   %{buildroot}/binaries/verification/
 
 #ceph confs ?
 
 %post
 systemctl start verification
+chkconfig verification on
 
 
 %preun
@@ -40,5 +44,7 @@ rm -rf %{buildroot}
 %files
 %defattr(-,root,root,-)
 /binaries/verification/*
+/usr/lib/systemd/system/verification.service
+/root/.snmp/mibs/JMD-STORAGE-MIB.txt
 
 %changelog
