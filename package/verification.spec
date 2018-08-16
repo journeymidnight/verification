@@ -35,7 +35,6 @@ systemctl start verification
 chkconfig verification on
 curl -o /root/.snmp/mibs/JMD-STORAGE-MID.txt http://localhost:8083/JMD-STORAGE-MID.txt
 
-
 %preun
 
 %clean
@@ -47,3 +46,4 @@ rm -rf %{buildroot}
 /usr/lib/systemd/system/verification.service
 
 %changelog
+
