@@ -23,11 +23,13 @@ BuildRoot:	%(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
 
 %install
 mkdir -p  %{buildroot}/binaries/verification
+mv verification.service %{buildroot}/etc/systemd/system/multi-user.target.wants/verification.service
 cp -r *   %{buildroot}/binaries/verification/
 
 #ceph confs ?
 
 %post
+systemctl start verification
 
 
 %preun
