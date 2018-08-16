@@ -1,0 +1,43 @@
+workspace:
+  base: /go
+  path: src/github.com/journeymidnight/verification
+pipeline:
+  build:
+    image: centos:7.2.1511
+    commands:
+      #nodejs
+      - yum install -y nodejs
+      - yum install -y npm
+      #go
+      - yum install -y git
+      - yum install -y rpm-build make
+      - bash package/rpmbuild.sh
+
+  s3:
+    image: plugins/s3
+    bucket: jmdrepo
+    source: "*.x86_64.rpm"
+    secrets: [AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY]
+    path_style: false
+    acl: public-read
+    endpoint: https://oss-cn-beijing.aliyuncs.com
+    when:
+       event: [tag]
+
+  github_release:
+    image: plugins/github-release
+    files:
+      - "*.x86_64.rpm"
+    checksum:
+      - md5
+    secrets: [github_token]
+    when:
+       event: [tag]
+  pushbear:
+    image: thesues/drone-pushbear
+    url: XXXX
+    secrets: [sendkey]
+    when:
+      success: false
+      failure: false
+      change: true
