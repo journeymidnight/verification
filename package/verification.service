@@ -1,0 +1,17 @@
+[Unit]
+Description=verification
+
+[Service]
+LimitAS=infinity
+LimitRSS=infinity
+LimitCORE=infinity
+LimitNOFILE=65535
+Type=simple
+ExecStart=/binaries/verification/server.js
+ExecStop=/usr/bin/kill $MAINPID
+Restart=always
+RestartSec=30s
+User=root
+
+[Install]
+WantedBy=multi-user.target
