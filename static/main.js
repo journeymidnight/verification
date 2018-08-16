@@ -32,7 +32,7 @@ function httpGetAsync(url, callback) {
     xmlHttp.send(null);
 }
 
-httpGetAsync("http://127.0.0.1:30000/ceph_status", function(response) {
+httpGetAsync("/ceph_status", function(response) {
     var json = JSON.parse(response);
-    document.getElementById("ceph_status").textContent =  json.osdmap.osdmap.num_osds;
+    document.getElementById("ceph-status").textContent =  json.osdmap.osdmap.num_osds;
 })
