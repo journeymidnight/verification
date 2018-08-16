@@ -6,7 +6,7 @@
 
 .viewer {
     background-color: steelblue;
-    width : 30%;
+    width: 30%;
     height: 300px;
     padding-bottom: 30%;
     float: left;
@@ -26,4 +26,8 @@ h1 {
 h2 {
     text-align: center;
     text-transform: uppercase;
+}
+
+.info {
+    width: 96%;
 }
