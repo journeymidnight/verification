@@ -28,6 +28,7 @@ var prometheus_port = '9090';
 var urlPath_nier_login = '/api/v1/user/login';
 var nier_port = '8080';
 
+app.use(express.static('static'));
 /*
   describe: Get CEPH info by executing commands on the operating system.
   input: cmdStr. example:ceph status --format json-pretty
