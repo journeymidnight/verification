@@ -34,5 +34,8 @@ function httpGetAsync(url, callback) {
 
 httpGetAsync("/ceph_status", function(response) {
     var json = JSON.parse(response);
-    document.getElementById("ceph-status").textContent =  json.osdmap.osdmap.num_osds;
+    var info = "status:" + json.health.status + "\n";
+    info = info + json.osdmap.osdmap.num_osds + "\n";
+
+    document.getElementById("ceph-status").textContent = info;
 })
