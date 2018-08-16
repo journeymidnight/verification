@@ -37,9 +37,9 @@ httpGetAsync("/ceph_status", function (response) {
     var info = "status:" + json.health.status + "\n";
     var mons = json.monmap.mons;
     mons.forEach(function (mon) {
-        info += info + mon.addr + "\n";
+        info += mon.addr + "\n";
     });
-    info = info + "num osds: " + json.osdmap.osdmap.num_osds +
+    info += "num osds: " + json.osdmap.osdmap.num_osds +
         " num up: " + json.osdmap.osdmap.num_up_osds +
         " num in: " + json.osdmap.osdmap.num_in_osds + "\n";
     document.getElementById("ceph-status").textContent = info;
