@@ -19,7 +19,7 @@ vipInput.addEventListener("keypress", function (event) {
         view = viewNameInput.value;
         if (vip !== "" && view !== "") {
             sambaChecked = true;
-        sambaVerification();
+            sambaVerification();
         }
     }
 });
@@ -30,7 +30,7 @@ viewNameInput.addEventListener("keypress", function (event) {
         view = viewNameInput.value;
         if (vip !== "" && view !== "") {
             sambaChecked = true;
-        sambaVerification();
+            sambaVerification();
         }
     }
 });
@@ -38,7 +38,7 @@ viewNameInput.addEventListener("keypress", function (event) {
 checkBtn.addEventListener("click", function () {
     if (vip !== "" && view !== "") {
         sambaChecked = true;
-    sambaVerification();
+        sambaVerification();
     }
 });
 
@@ -190,7 +190,7 @@ function verificationAll() {
     cephStatusVerification();
     cephOsdTreeVerification();
     hostWalkVerification();
-    if(sambaChecked) {
+    if (sambaChecked) {
         sambaVerification();
     }
 }
