@@ -3,50 +3,50 @@
 
 <head>
     <meta charset="utf-8" />
-    <title>Verification</title>
+    <title>存储一体机部署校验</title>
     <link rel="stylesheet" type="text/css" media="screen" href="assets/css/main.css" />
 </head>
 
 <body>
-    <h1>Verification</h1>
+    <h1>存储一体机部署校验</h1>
     <div class="container">
         <div class="viewer top">
-            <h2>Ceph Status</h2>
+            <h2>Ceph状态检查</h2>
             <ul class="info" id="ceph-status">
-                <li>loading...</li>
+                <li>加载中...</li>
             </ul>
         </div>
         <div class="viewer top">
-            <h2>Ceph OSD Tree</h2>
+            <h2>Ceph OSD 树检查</h2>
             <ul class="info" id="osd-tree">
-                <li>loading...</li>
+                <li>加载中...</li>
             </ul>
         </div>
         <div class="viewer top">
-            <h2>Prometheus Ceph</h2>
+            <h2>普罗米修斯状态检查</h2>
             <ul class="info" id="prometheus-ceph">
-                <li>loading...</li>
+                <li>加载中...</li>
             </ul>
         </div>
         <div class="viewer">
-            <h2>Nier</h2>
+            <h2>尼尔状态检查</h2>
             <ul class="info" id="nier">
-                <li>loading...</li>
+                <li>加载中...</li>
             </ul>
         </div>
         <div class="viewer">
-            <h2>SNMP</h2>
+            <h2>SNMP有效性检查</h2>
             <ul class="info" id="snmp">
-                <li>loading...</li>
+                <li>加载中...</li>
             </ul>
         </div>
         <div class="viewer">
-            <h2>Samba</h2>
-            <input id="vip" type="text" placeholder="vip">
-            <input id="view-name" type="text" placeholder="view name">
-            <button id="check">check</button>
+            <h2>Samba连接有效性检查</h2>
+            <span id="address"></span>
+            <span id="check">检查</span>
+            <input id="vip" type="text" placeholder="虚拟IP">
+            <input id="view-name" type="text" placeholder="视图名称">
             <ul class="info" id="samba">
-                <li>Wait For Parameters.</li>
             </ul>
         </div>
     </div>

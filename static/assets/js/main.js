@@ -8,6 +8,7 @@ const snmpUl = document.getElementById("snmp");
 const prometheusCephUl = document.getElementById("prometheus-ceph");
 const nierUl = document.getElementById("nier");
 const sambaUl = document.getElementById("samba");
+const address = document.getElementById("address");
 
 const vipInput = document.getElementById("vip");
 const viewNameInput = document.getElementById("view-name");
@@ -36,9 +37,13 @@ viewNameInput.addEventListener("keypress", function (event) {
 });
 
 checkBtn.addEventListener("click", function () {
+    vip = vipInput.value;
+    view = viewNameInput.value;
     if (vip !== "" && view !== "") {
         sambaChecked = true;
         sambaVerification();
+    } else {
+        alert("请先输入VIP地址及视图名称。");
     }
 });
 
@@ -72,6 +77,7 @@ function sambaVerification() {
     vip = vipInput.value;
     view = viewNameInput.value;
     if (vip !== "" && view !== "") {
+        address.textContent = "服务地址： smb://" + vip + '/' + view;
         httpGetAsync("/smb_folder/" + vip + '/' + view, function (response) {
             clearAllLi("#samba li");
             response.split(/[\r\n]/).forEach(function (file) {
@@ -87,15 +93,15 @@ function cephStatusVerification() {
 
         clearAllLi("#ceph-status li");
 
-        cephStatusUl.appendChild(createLi("status:" + json.health.status));
+        cephStatusUl.appendChild(createLi("ceph 状态：" + json.health.status));
         var mons = json.monmap.mons;
         mons.forEach(function (mon) {
-            cephStatusUl.appendChild(createLi(mon.addr));
+            cephStatusUl.appendChild(createLi("服务地址： " + mon.addr));
         });
         cephStatusUl.appendChild(createLi(
-            "num osds: " + json.osdmap.osdmap.num_osds +
-            " num up: " + json.osdmap.osdmap.num_up_osds +
-            " num in: " + json.osdmap.osdmap.num_in_osds));
+            "osd总数: " + json.osdmap.osdmap.num_osds +
+            "  osd启动数: " + json.osdmap.osdmap.num_up_osds +
+            "  osd接入数: " + json.osdmap.osdmap.num_in_osds));
     });
 }
 
@@ -118,7 +124,7 @@ function cephOsdTreeVerification() {
                     textData.push(osds);
                     osds = "";
                 }
-                textData.push(node.name);
+                textData.push("主机 " + node.name);
             } else if (type === "osd") {
                 hostOsdNum[hostOsdNum.length - 1] += 1;
                 osds += "  " + node.name;
@@ -127,7 +133,6 @@ function cephOsdTreeVerification() {
         textData.push(osds);
 
         //TODO: Graph
-
         document.querySelectorAll("#osd-tree li").forEach(
             function (li) {
                 li.remove();
@@ -150,33 +155,46 @@ function hostWalkVerification() {
         clearAllLi("#nier li")
 
         json.forEach(function (hostname) {
-            httpGetAsync("/snmp/" + hostname, function (respnose) {
-                snmpUl.appendChild(createLi(hostname));
-                var contents = respnose.replace(/1,3,6,1,4,1,51052/g, "\n" + "1,3,6,1,4,1,51052").split(/[\n]/g);
-                contents.forEach(function (content) {
-                    if (content !== "") {
-                        snmpUl.appendChild(createLi(content));
+            httpGetAsync("/snmp/" + hostname, function (response) {
+                var contents = response.replace(/1,3,6,1,4,1,51052/g, "\n" + "1,3,6,1,4,1,51052").split(/[\n]/g);
+                var token = true;
+                var list = [];
+                for (var i = 0; i < contents.length; i++) {
+                    if (contents[i] !== "") {
+                        if (contents[i].search("noSuchObject") >= 0) {
+                            token = false;
+                            list.push(contents[i]);
+                        }
+                    }
+                }
+                if (token) {
+                    snmpUl.appendChild(createLi("主机 " + hostname + ": 检查通过"));
+                } else {
+                    snmpUl.appendChild(createLi("主机 " + hostname + ": 检查不通过, 失败响应信息："));
+                    list.forEach(function (content) {
+                        snmpUl.appendChild(createLi(content))
+                    });
+                }
+            });
+
+            httpGetAsync("/prometheus_ceph/" + hostname, function (response) {
+                var cephJson = JSON.parse(response);
+                httpGetAsync("/prometheus_mem/" + hostname, function (respnose) {
+                    var memJson = JSON.parse(respnose);
+                    if (cephJson.status === 'success' && memJson.status === 'success') {
+                        prometheusCephUl.appendChild(createLi("主机 " + hostname + ": 检查通过"));
+                    } else {
+                        prometheusCephUl.appendChild(createLi("主机 " + hostname + ": 检查不通过"));
+                        prometheusCephUl.appendChild(createLi("ceph检查状态: " + cephJson.status));
+                        prometheusCephUl.appendChild(createLi("ceph内存检查状态: " + memJson.status));
                     }
                 });
 
-                httpGetAsync("/prometheus_ceph/" + hostname, function (response) {
-                    var cephJson = JSON.parse(response);
-                    httpGetAsync("/prometheus_mem/" + hostname, function (respnose) {
-                        var memJson = JSON.parse(respnose);
-                        if (cephJson.status === 'success' && memJson.status === 'success') {
-                            prometheusCephUl.appendChild(createLi(hostname + ": " + 'success'));
-                        } else {
-                            prometheusCephUl.appendChild(createLi(hostname + ": " + 'fail'));
-                            prometheusCephUl.appendChild(createLi("ceph status: " + cephJson.status));
-                            prometheusCephUl.appendChild(createLi("ceph memory status: " + memJson.status));
-                        }
-                    });
+            });
 
-                });
-                httpGetAsync("/nier_token/" + hostname, function (response) {
-                    var json = JSON.parse(response);
-                    nierUl.appendChild(createLi(hostname + json.Token));
-                });
+            httpGetAsync("/nier_token/" + hostname, function (response) {
+                var json = JSON.parse(response);
+                nierUl.appendChild(createLi("主机 " + hostname + ": 检查" + (json.Token.replace(/\-/g, "").search(/^[0-9a-f]{32}$/) >= 0 ? "通过" : "不通过")));
             });
         });
     });
