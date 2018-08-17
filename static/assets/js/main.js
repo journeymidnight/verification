@@ -81,7 +81,9 @@ function sambaVerification() {
         httpGetAsync("/smb_folder/" + vip + '/' + view, function (response) {
             clearAllLi("#samba li");
             response.split(/[\r\n]/).forEach(function (file) {
-                sambaUl.appendChild(createLi(file));
+                if (file !== "") {
+                    sambaUl.appendChild(createLi(file));
+                }
             });
         });
     }
