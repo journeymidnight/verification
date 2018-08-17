@@ -1,8 +1,9 @@
 var vip = "";
 var view = "";
-var vipInput = document.getElementById("vip");
-var viewNameInput = document.getElementById("view-name");
-var checkBtn = document.getElementById("check");
+const cephStatusUl = document.getElementById("ceph-status");
+const vipInput = document.getElementById("vip");
+const viewNameInput = document.getElementById("view-name");
+const checkBtn = document.getElementById("check");
 
 vipInput.addEventListener("keypress", function (event) {
     if (event.which === 13) {
@@ -34,13 +35,26 @@ function httpGetAsync(url, callback) {
 
 httpGetAsync("/ceph_status", function (response) {
     var json = JSON.parse(response);
-    var info = "status:" + json.health.status + "\n";
+    document.querySelectorAll("#ceph-status li").forEach(
+        function (li) {
+            li.remove();
+        }
+    );
+
+    cephStatusUl.appendChild(createLi("status:" + json.health.status));
     var mons = json.monmap.mons;
     mons.forEach(function (mon) {
-        info += mon.addr + "\n";
+        cephStatusUl.appendChild(createLi(mon.addr));
     });
-    info += "num osds: " + json.osdmap.osdmap.num_osds +
+    cephStatusUl.appendChild(createLi(
+        "num osds: " + json.osdmap.osdmap.num_osds +
         " num up: " + json.osdmap.osdmap.num_up_osds +
-        " num in: " + json.osdmap.osdmap.num_in_osds + "\n";
-    document.getElementById("ceph-status").textContent = info;
+        " num in: " + json.osdmap.osdmap.num_in_osds));
 })
+
+function createLi(text) {
+    var node = document.createElement("li");
+    var textNode = document.createTextNode(text);
+    node.appendChild(textNode);
+    return node;
+}
