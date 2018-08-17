@@ -1,7 +1,14 @@
+#container {
+	width: 360px;
+	margin: 100px auto;
+	background-color: #f7f7f7;
+	box-shadow: 0 0 3px rgba(0, 0, 0, 0.1);
+}
+
 .viewer {
-	background-color: steelblue;
-	width: 30%;
-	height: 400px;
+	background-color: #2980b9;
+	width: 31%;
+	height: 450px;
 	padding-bottom: 30%;
 	float: left;
 	padding: 10px 10px 10px 10px;
@@ -14,26 +21,21 @@ input {
 
 body {
 	font-family: Roboto;
-	background: -webkit-linear-gradient(90deg, #2BC0E4 10%, #EAECC6 90%);
+	background-color: -webkit-linear-gradient(90deg, #2BC0E4 10%, #EAECC6 90%);
 	/* Chrome 10+, Saf5.1+ */
-	background: -moz-linear-gradient(90deg, #2BC0E4 10%, #EAECC6 90%);
+	background-color: -moz-linear-gradient(90deg, #2BC0E4 10%, #EAECC6 90%);
 	/* FF3.6+ */
-	background: -ms-linear-gradient(90deg, #2BC0E4 10%, #EAECC6 90%);
+	background-color: -ms-linear-gradient(90deg, #2BC0E4 10%, #EAECC6 90%);
 	/* IE10 */
-	background: -o-linear-gradient(90deg, #2BC0E4 10%, #EAECC6 90%);
+	background-color: -o-linear-gradient(90deg, #2BC0E4 10%, #EAECC6 90%);
 	/* Opera 11.10+ */
-	background: linear-gradient(90deg, #2BC0E4 10%, #EAECC6 90%);
+	background-color: linear-gradient(90deg, #2BC0E4 10%, #EAECC6 90%);
 	/* W3C */
 }
 
-ul {
-	list-style: none;
-	margin: 0;
-	padding: 0;
-}
-
 h1 {
-	background: #2980b9;
+	text-align: center;
+	background-color: #2980b9;
 	color: white;
 	margin: 0;
 	padding: 10px 20px;
@@ -42,19 +44,39 @@ h1 {
 	font-weight: normal;
 }
 
+h2 {
+	background-color: #2980b9;
+	color: white;
+	margin: 0;
+	padding: 10px 20px;
+	text-align: center;
+	text-transform: uppercase;
+	font-size: 20px;
+	font-weight: normal;
+}
+
+ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
 li {
-	background: #fff;
-	height: 40px;
-	line-height: 40px;
-	color: #666;
+	font-size: 16px;
+	color: #2980b9;
+	background-color: #f7f7f7;
+	width: 100%;
+	padding: 13px 13px 13px 20px;
+	box-sizing: border-box;
+	border: 3px solid rgba(0, 0, 0, 0);
 }
 
 li:nth-child(2n) {
-	background: #f7f7f7;
+	background-color: #fff;
 }
 
 span {
-	background: #e74c3c;
+	background-color: #e74c3c;
 	height: 40px;
 	margin-right: 20px;
 	text-align: center;
@@ -66,7 +88,7 @@ span {
 }
 
 input {
-	font-size: 18px;
+	font-size: 16px;
 	color: #2980b9;
 	background-color: #f7f7f7;
 	width: 100%;
@@ -76,19 +98,7 @@ input {
 }
 
 input:focus {
-	background: #fff;
+	background-color: #fff;
 	border: 3px solid #2980b9;
 	outline: none;
-}
-
-#container {
-	width: 360px;
-	margin: 100px auto;
-	background: #f7f7f7;
-	box-shadow: 0 0 3px rgba(0, 0, 0, 0.1);
-}
-
-h2 {
-	text-align: center;
-	text-transform: uppercase;
 }
