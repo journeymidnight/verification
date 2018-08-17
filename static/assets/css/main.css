@@ -8,29 +8,28 @@
 .viewer {
 	background-color: #2980b9;
 	width: 31%;
-	height: 450px;
+	height: 520px;
 	padding-bottom: 30%;
 	float: left;
 	padding: 10px 10px 10px 10px;
 	margin: 10px 10px;
 }
 
-input {
-	width: 40%;
+.top {
+	height: 400px;
 }
 
 body {
-	font-family: Roboto;
-	background-color: -webkit-linear-gradient(90deg, #2BC0E4 10%, #EAECC6 90%);
 	/* Chrome 10+, Saf5.1+ */
-	background-color: -moz-linear-gradient(90deg, #2BC0E4 10%, #EAECC6 90%);
+	background-color: -webkit-linear-gradient(90deg, #2BC0E4 10%, #EAECC6 90%);
 	/* FF3.6+ */
-	background-color: -ms-linear-gradient(90deg, #2BC0E4 10%, #EAECC6 90%);
+	background-color: -moz-linear-gradient(90deg, #2BC0E4 10%, #EAECC6 90%);
 	/* IE10 */
-	background-color: -o-linear-gradient(90deg, #2BC0E4 10%, #EAECC6 90%);
+	background-color: -ms-linear-gradient(90deg, #2BC0E4 10%, #EAECC6 90%);
 	/* Opera 11.10+ */
-	background-color: linear-gradient(90deg, #2BC0E4 10%, #EAECC6 90%);
+	background-color: -o-linear-gradient(90deg, #2BC0E4 10%, #EAECC6 90%);
 	/* W3C */
+	background-color: linear-gradient(90deg, #2BC0E4 10%, #EAECC6 90%);
 }
 
 h1 {
