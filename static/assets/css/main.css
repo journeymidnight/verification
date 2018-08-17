@@ -1,7 +1,7 @@
 .viewer {
 	background-color: steelblue;
 	width: 30%;
-	height: 300px;
+	height: 400px;
 	padding-bottom: 30%;
 	float: left;
 	padding: 10px 10px 10px 10px;
@@ -91,8 +91,4 @@ input:focus {
 h2 {
 	text-align: center;
 	text-transform: uppercase;
-}
-
-.info {
-	width: 96%;
 }
