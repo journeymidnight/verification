@@ -80,11 +80,16 @@ function sambaVerification() {
         address.textContent = "服务地址： smb://" + vip + '/' + view;
         httpGetAsync("/smb_folder/" + vip + '/' + view, function (response) {
             clearAllLi("#samba li");
-            response.split(/[\r\n]/).forEach(function (data) {
-                if (data !== "") {
-                    sambaUl.appendChild(createLi(data));
-                }
-            });
+            if (response.search("blocks available") >= 0) {
+                sambaUl.appendChild(createLi("Samba连接成功"));
+            } else {
+                sambaUl.appendChild(createLi("Samba连接失败，错误信息："))
+                response.split(/[\r\n]/).forEach(function (data) {
+                    if (data !== "") {
+                        sambaUl.appendChild(createLi(data));
+                    }
+                });
+            }
         });
     }
 }
