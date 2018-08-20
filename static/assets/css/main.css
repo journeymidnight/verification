@@ -26,33 +26,16 @@ li {
 	background-color: #f7f7f7;
 	width: 100%;
 	padding: 13px 13px 13px 20px;
-	box-sizing: border-box;
-	border: 3px solid rgba(0, 0, 0, 0);
 }
 
 li:nth-child(2n) {
 	background-color: #fff;
 }
 
-input {
-	font-size: 16px;
-	color: #2980b9;
-	background-color: #ffffff;
-	width: 100%;
-	padding: 13px 13px 13px 20px;
-	box-sizing: border-box;
-	border: 1px solid #ffffff;
-}
-
-input:focus {
-	background-color: #ffffff;
-	border: 3px solid #2980b9;
-	outline: none;
-}
-
 span {
 	background-color: #ffffff;
 	color: #2980b9;
+	font-size: 16px;
 	padding: 13px 13px 13px 13px;
 	float: left;
 }
@@ -61,12 +44,24 @@ span {
 	font-size: 16px;
 	color: #f7f7f7;
 	background-color: #2980b9;
-	border: 3px solid #2980b9;
 	float: right;
-	padding: 5px 5px 5px 5px;
+	padding: 10px 10px 10px 10px;
 }
 
 #check:hover {
 	color: #2980b9;
 	background-color: #f7f7f7;
+}
+
+input {
+	font-size: 16px;
+	color: #2980b9;
+	background-color: #ffffff;
+	width: 100%;
+	padding: 13px 13px 13px 20px;
+}
+
+input:focus {
+	background-color: #ffffff;
+	outline: none;
 }
