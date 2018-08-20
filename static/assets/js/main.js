@@ -149,7 +149,6 @@ function cephOsdTreeVerification() {
 }
 
 function hostWalkVerification() {
-
     httpGetAsync("/host_list", function (response) {
         var json = JSON.parse(response);
         clearAllLi("#snmp li");
