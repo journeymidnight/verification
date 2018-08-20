@@ -112,7 +112,6 @@ function cephStatusVerification() {
     });
 }
 
-
 function cephOsdTreeVerification() {
     httpGetAsync("/ceph_osd_df_tree", function (response) {
         var json = JSON.parse(response);
@@ -124,7 +123,7 @@ function cephOsdTreeVerification() {
         nodes.forEach(function (node) {
             var type = node.type;
             if (type === "host") {
-                hostList.push(node.name.replace(/.*node/g, "node"));
+                hostList.push(node.name);
                 hostOsdNum.push(0);
                 if (osds.length !== 0) {
                     textData.push(osds);
@@ -138,11 +137,23 @@ function cephOsdTreeVerification() {
         });
         textData.push(osds);
 
-        //TODO: Graph
         clearAllLi("#osd-tree li");
         textData.forEach(function (text) {
             osdTreeUl.appendChild(createLi(text));
         });
+
+        var color = Chart.helpers.color;
+        var newDataSets = [{
+                label: 'OSD',
+                backgroundColor: color(window.chartColors.blue).alpha(0.5).rgbString(),
+                borderColor: window.chartColors.blue,
+                borderWidth: 1,
+                data: hostOsdNum
+            }] ;
+        barChartData.labels = hostList;
+        barChartData.datasets = [];
+        barChartData.datasets=newDataSets;
+        window.myBar.update();
     });
 }
 

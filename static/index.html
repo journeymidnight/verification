@@ -6,6 +6,7 @@
     <title>存储一体机部署校验</title>
     <link rel="stylesheet" type="text/css" media="screen" href="assets/css/materialize.min.css" />
     <link rel="stylesheet" type="text/css" media="screen" href="assets/css/main.css" />
+    <script src="assets/js/Chart.bundle.min.js"></script>
 </head>
 
 <body>
@@ -18,11 +19,15 @@
                     <li>正在检查...</li>
                 </ul>
             </div>
-            <div class="col s4">
+            <div class="col s2">
                 <h2>Ceph OSD 树校验</h2>
                 <ul class="info" id="osd-tree">
                     <li>正在检查...</li>
                 </ul>
+            </div>
+            <div class="col s2">
+                <h2>Ceph OSD节点统计</h2>
+                <canvas id="canvas"></canvas>
             </div>
             <div class="col s4">
                 <h2>普罗米修斯状态校验</h2>
@@ -55,8 +60,45 @@
             </div>
         </div>
     </div>
-    <script src="assets/js/main.js"></script>
+    <script>
+        var barChartData = {
+            labels: [],
+            datasets: [{
+                label: 'OSD',
+                borderWidth: 1,
+                data: []
+            }]
+        };
+
+        window.onload = function () {
+            var ctx = document.getElementById('canvas').getContext('2d');
+            window.myBar = new Chart(ctx, {
+                type: 'bar',
+                data: barChartData,
+                options: {
+                    responsive: true,
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'OSD 数量'
+                    }
+                }
+            });
+        };
+        window.chartColors = {
+            red: 'rgb(255, 99, 132)',
+            orange: 'rgb(255, 159, 64)',
+            yellow: 'rgb(255, 205, 86)',
+            green: 'rgb(75, 192, 192)',
+            blue: 'rgb(54, 162, 235)',
+            purple: 'rgb(153, 102, 255)',
+            grey: 'rgb(201, 203, 207)'
+        };
+    </script>
     <script src="assets/js/materialize.min.js"></script>
+    <script src="assets/js/main.js"></script>
 </body>
 
 </html>
