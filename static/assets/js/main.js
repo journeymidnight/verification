@@ -15,7 +15,7 @@ const viewNameInput = document.getElementById("view-name");
 const checkBtn = document.getElementById("check");
 
 vipInput.addEventListener("keypress", function (event) {
-    if (event.which === 13) {
+    if (event.which === 13) { // Enter
         vip = vipInput.value;
         view = viewNameInput.value;
         if (vip !== "" && view !== "") {
@@ -26,7 +26,7 @@ vipInput.addEventListener("keypress", function (event) {
 });
 
 viewNameInput.addEventListener("keypress", function (event) {
-    if (event.which === 13) {
+    if (event.which === 13) { // Enter
         vip = vipInput.value;
         view = viewNameInput.value;
         if (vip !== "" && view !== "") {
@@ -80,9 +80,9 @@ function sambaVerification() {
         address.textContent = "服务地址： smb://" + vip + '/' + view;
         httpGetAsync("/smb_folder/" + vip + '/' + view, function (response) {
             clearAllLi("#samba li");
-            response.split(/[\r\n]/).forEach(function (file) {
-                if (file !== "") {
-                    sambaUl.appendChild(createLi(file));
+            response.split(/[\r\n]/).forEach(function (data) {
+                if (data !== "") {
+                    sambaUl.appendChild(createLi(data));
                 }
             });
         });
@@ -92,9 +92,7 @@ function sambaVerification() {
 function cephStatusVerification() {
     httpGetAsync("/ceph_status", function (response) {
         var json = JSON.parse(response);
-
         clearAllLi("#ceph-status li");
-
         cephStatusUl.appendChild(createLi("ceph 状态：" + json.health.status));
         var mons = json.monmap.mons;
         mons.forEach(function (mon) {
@@ -111,7 +109,6 @@ function cephStatusVerification() {
 function cephOsdTreeVerification() {
     httpGetAsync("/ceph_osd_df_tree", function (response) {
         var json = JSON.parse(response);
-
         var nodes = json.nodes;
         var hostList = [];
         var hostOsdNum = [];
@@ -135,11 +132,7 @@ function cephOsdTreeVerification() {
         textData.push(osds);
 
         //TODO: Graph
-        document.querySelectorAll("#osd-tree li").forEach(
-            function (li) {
-                li.remove();
-            }
-        )
+        clearAllLi("#osd-tree li");
         textData.forEach(
             function (text) {
                 osdTreeUl.appendChild(createLi(text));
@@ -190,7 +183,6 @@ function hostWalkVerification() {
                         prometheusCephUl.appendChild(createLi("ceph内存检查状态: " + memJson.status));
                     }
                 });
-
             });
 
             httpGetAsync("/nier_token/" + hostname, function (response) {
@@ -205,13 +197,11 @@ cephStatusVerification();
 cephOsdTreeVerification();
 hostWalkVerification();
 
-function verificationAll() {
+setInterval(function () {
     cephStatusVerification();
     cephOsdTreeVerification();
     hostWalkVerification();
     if (sambaChecked) {
         sambaVerification();
     }
-}
-
-setInterval(verificationAll, interval);
+}, interval);
