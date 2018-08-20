@@ -2,14 +2,15 @@ var vip = "";
 var view = "";
 var interval = 5000;
 var sambaChecked = false;
+
 const cephStatusUl = document.getElementById("ceph-status");
 const osdTreeUl = document.getElementById("osd-tree");
 const snmpUl = document.getElementById("snmp");
 const prometheusCephUl = document.getElementById("prometheus-ceph");
 const nierUl = document.getElementById("nier");
 const sambaUl = document.getElementById("samba");
-const address = document.getElementById("address");
 
+const address = document.getElementById("address");
 const vipInput = document.getElementById("vip");
 const viewNameInput = document.getElementById("view-name");
 const checkBtn = document.getElementById("check");
@@ -76,22 +77,23 @@ function clearAllLi(cssSelector) {
 function sambaVerification() {
     vip = vipInput.value;
     view = viewNameInput.value;
-    if (vip !== "" && view !== "") {
-        address.textContent = "服务地址： smb://" + vip + '/' + view;
-        httpGetAsync("/smb_folder/" + vip + '/' + view, function (response) {
-            clearAllLi("#samba li");
-            if (response.search("blocks available") >= 0) {
-                sambaUl.appendChild(createLi("Samba连接成功"));
-            } else {
-                sambaUl.appendChild(createLi("Samba连接失败，错误信息："))
-                response.split(/[\r\n]/).forEach(function (data) {
-                    if (data !== "") {
-                        sambaUl.appendChild(createLi(data));
-                    }
-                });
-            }
-        });
+    if (vip === "" || view === "") {
+        return;
     }
+    address.textContent = "服务地址： smb://" + vip + '/' + view;
+    httpGetAsync("/smb_folder/" + vip + '/' + view, function (response) {
+        clearAllLi("#samba li");
+        if (response.search("blocks available") >= 0) {
+            sambaUl.appendChild(createLi("Samba连接成功"));
+        } else {
+            sambaUl.appendChild(createLi("Samba连接失败，错误信息："))
+            response.split(/[\r\n]/).forEach(function (data) {
+                if (data !== "") {
+                    sambaUl.appendChild(createLi(data));
+                }
+            });
+        }
+    });
 }
 
 function cephStatusVerification() {
@@ -138,11 +140,9 @@ function cephOsdTreeVerification() {
 
         //TODO: Graph
         clearAllLi("#osd-tree li");
-        textData.forEach(
-            function (text) {
-                osdTreeUl.appendChild(createLi(text));
-            }
-        );
+        textData.forEach(function (text) {
+            osdTreeUl.appendChild(createLi(text));
+        });
     });
 }
 
