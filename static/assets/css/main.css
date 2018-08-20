@@ -12,7 +12,7 @@ h1 {
 h2 {
 	background-color: #2980b9;
 	color: white;
-	margin: 5px;
+	margin: 10px 0px;
 	padding: 10px 20px;
 	text-align: center;
 	text-transform: uppercase;
@@ -63,7 +63,7 @@ span {
 	background-color: #2980b9;
 	border: 3px solid #2980b9;
 	float: right;
-	padding: 13px 13px 13px 13px;
+	padding: 5px 5px 5px 5px;
 }
 
 #check:hover {
