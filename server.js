@@ -6,6 +6,8 @@ var exec = require('child_process').exec;
 var snmp = require('snmp-native');
 var util = require('util');
 var http = require('http');
+var url = require('url');
+var fs = require('fs');
 
 //cmds to get ceph status from os
 var cmdCeph_osd_df_tree = 'ceph osd df tree --format json-pretty';
@@ -28,6 +30,9 @@ var prometheus_port = '9090';
 */
 var urlPath_nier_login = '/api/v1/user/login';
 var nier_port = '8080';
+
+var mibFileName = 'JMD-STORAGE-MIB.txt';
+var automata_port = '8083';
 
 app.use(express.static('static'));
 /*
@@ -306,6 +311,52 @@ app.get('/smb_folder/:vip/:view', function (req, res) {
     res.send(smbfolderinfo);
   });
 });
+
+/**
+ * Get mib file for snmp verification.
+ */
+function getMibFile() {
+  var downloadDir = '/root/.snmp/mibs/';
+  fs.exists(downloadDir + '/' + mibFileName, function (exists) {
+    if (!exists) {
+      var fileUrl = 'http://localhost:' + automata_port + '/' + mibFileName;
+      var mkdir = 'mkdir -p ' + downloadDir;
+      var child = exec(mkdir, (err, stdout, stderr) => {
+        if (err) {
+          console.log("Can't get the mib file, error info: " + err);
+        } else {
+          downloadFile(fileUrl, downloadDir);
+        }
+      });
+    }
+  });
+}
+
+/**
+ * Download file to target directory.
+ */
+function downloadFile(fileUrl, downloadDir) {
+  var options = {
+    host: url.parse(fileUrl).hostname,
+    port: url.parse(fileUrl).port,
+    path: url.parse(fileUrl).pathname
+  };
+  var fileName = url.parse(fileUrl).pathname.split('/').pop();
+  var file = fs.createWriteStream(downloadDir + fileName);
+  console.log(options);
+  console.log(fileName);
+  http.get(options, function (res) {
+    res.on('data', function (data) {
+      file.write(data);
+    }).on('end', function () {
+      file.end();
+      console.log(fileName + ' download to ' + downloadDir);
+    });
+  });
+}
+
+getMibFile();
+setInterval(getMibFile, 60000);
 
 var server = app.listen(30000, function () {
   var host = server.address().address;
