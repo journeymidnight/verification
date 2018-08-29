@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>存储一体机部署校验</title>
+    <link rel="stylesheet" type="text/css" media="screen" href="assets/css/materialize.min.css" />
+    <link rel="stylesheet" type="text/css" media="screen" href="assets/css/main.css" />
+    <script src="assets/js/Chart.bundle.min.js"></script>
+</head>
+
+<body>
+    <h1>存储一体机部署校验</h1>
+    <div>
+        <div class="row">
+            <div class="col s4">
+                <h2>Ceph状态校验</h2>
+                <ul class="info" id="ceph-status">
+                    <li>正在检查...</li>
+                </ul>
+            </div>
+            <div class="col s2">
+                <h2>Ceph OSD 树校验</h2>
+                <ul class="info" id="osd-tree">
+                    <li>正在检查...</li>
+                </ul>
+            </div>
+            <div class="col s2">
+                <h2>Ceph OSD节点统计</h2>
+                <canvas id="canvas"></canvas>
+            </div>
+            <div class="col s4">
+                <h2>普罗米修斯状态校验</h2>
+                <ul class="info" id="prometheus-ceph">
+                    <li>正在检查...</li>
+                </ul>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col s4">
+                <h2>尼尔状态校验</h2>
+                <ul class="info" id="nier">
+                    <li>正在检查...</li>
+                </ul>
+            </div>
+            <div class="col s4">
+                <h2>SNMP有效性校验</h2>
+                <ul class="info" id="snmp">
+                    <li>正在检查...</li>
+                </ul>
+            </div>
+            <div class="col s4">
+                <h2>Samba连接有效性校验</h2>
+                <span id="address"></span>
+                <span id="check">校验</span>
+                <input id="vip" type="text" placeholder="虚拟IP">
+                <input id="view-name" type="text" placeholder="视图名称">
+                <ul class="info" id="samba">
+                </ul>
+            </div>
+        </div>
+    </div>
+    <script>
+        var barChartData = {
+            labels: [],
+            datasets: [{
+                label: 'OSD',
+                borderWidth: 1,
+                data: []
+            }]
+        };
+
+        window.onload = function () {
+            var ctx = document.getElementById('canvas').getContext('2d');
+            window.myBar = new Chart(ctx, {
+                type: 'bar',
+                data: barChartData,
+                options: {
+                    responsive: true,
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'OSD 数量'
+                    }
+                }
+            });
+        };
+        window.chartColors = {
+            red: 'rgb(255, 99, 132)',
+            orange: 'rgb(255, 159, 64)',
+            yellow: 'rgb(255, 205, 86)',
+            green: 'rgb(75, 192, 192)',
+            blue: 'rgb(54, 162, 235)',
+            purple: 'rgb(153, 102, 255)',
+            grey: 'rgb(201, 203, 207)'
+        };
+    </script>
+    <script src="assets/js/materialize.min.js"></script>
+    <script src="assets/js/main.js"></script>
+</body>
+
+</html>

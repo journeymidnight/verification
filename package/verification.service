@@ -9,6 +9,7 @@ LimitNOFILE=65535
 Type=simple
 ExecStart=/usr/bin/node /binaries/verification/server.js
 ExecStop=/usr/bin/kill $MAINPID
+WorkingDirectory=/binaries/verification
 Restart=always
 RestartSec=30s
 User=root
